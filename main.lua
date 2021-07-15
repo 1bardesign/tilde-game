@@ -1,16 +1,16 @@
 require("batteries"):export()
 
-local state = state_machine({
+local game_state = state_machine({
 	game = require("game_state")(),
 	--todo: title, win
 }, "game")
 
 function love.update(dt)
-	state:update(dt)
+	game_state:update(dt)
 end
 
 function love.draw()
-	state:draw()
+	game_state:draw()
 end
 
 function love.keypressed(k)
@@ -22,5 +22,5 @@ function love.keypressed(k)
 		end
 	end
 
-	state:_call("keypressed", k)
+	game_state:_call("keypressed", k)
 end
