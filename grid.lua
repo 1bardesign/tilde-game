@@ -4,11 +4,17 @@
 	written in a pretty inefficient way for now :)
 ]]
 
-local tile_size = vec2(9, 16)
-local cell_size = vec2(3, 3)
-
-local texture = love.graphics.newImage("cp437_ibm_pc.png")
+local texture = love.graphics.newImage("cga8x8thick.png")
+texture:setFilter("nearest", "nearest")
+local texture_geometry = vec2(16, 16)
 local quad = love.graphics.newQuad(0,0,0,0,texture:getDimensions())
+
+local tile_size = vec2(texture:getDimensions()):vdivi(texture_geometry)
+local cell_size = vec2(3, 3)
+local cell_step_y = 1
+local cell_step_z = 1
+--visual size, for debug rectangle and maybe culling?
+local cell_visual = cell_size:smul(1, cell_step_y)
 
 local tile = class({
 	name = "tile",
@@ -23,12 +29,15 @@ end
 
 function tile:draw()
 	love.graphics.push()
-	love.graphics.translate(self.offset.x * tile_size.x, self.offset.y * tile_size.y)
+	love.graphics.translate(
+		math.floor(self.offset.x * tile_size.x),
+		math.floor((self.offset.y * cell_step_y - self.z * cell_step_z) * tile_size.y)
+	)
 	love.graphics.setColor(color.unpack_argb(self.colour))
 	--note: wont work for non-ascii, we can cross that bridge when we get there
 	local b = self.glyph:byte(1)
-	local x = b % 32
-	local y = math.floor(b / 32)
+	local x = math.floor(b % texture_geometry.x)
+	local y = math.floor(b / texture_geometry.x)
 	quad:setViewport(
 		x * tile_size.x,
 		y * tile_size.y,
@@ -60,25 +69,42 @@ end
 function cell:draw()
 	love.graphics.push()
 	love.graphics.translate(
-		self.pos.x * cell_size.x * tile_size.x,
-		self.pos.y * cell_size.y * tile_size.y
+		math.floor(self.pos.x * cell_visual.x * tile_size.x),
+		math.floor(self.pos.y * cell_visual.y * tile_size.y)
 	)
+
+	if love.keyboard.isDown("`") then
+		love.graphics.setColor(colour.unpack_argb(0xff404040))
+		love.graphics.rectangle(
+			"line",
+			-tile_size.x,
+			-tile_size.y,
+			tile_size.x * cell_visual.x,
+			tile_size.y * cell_visual.y
+		)
+	end
+
 	table.stable_sort(self.tiles, tile.compare_z)
 	for _, v in ipairs(self.tiles) do
 		v:draw()
 	end
+
 	love.graphics.pop()
 end
 
-function cell:at(ox, oy, z)
+function cell:tile(ox, oy, z)
 	return functional.find_match(self.tiles, function(v)
 		return v.offset.x == ox and v.offset.y == oy and v.z == z
 	end)
 end
 
 function cell:set(ox, oy, z, glyph, colour)
-	local to_remove = glyph == nil or glyph == ""
-	local t = self:at(ox, oy, z)
+	local to_remove =
+		glyph == nil
+		or glyph == ""
+		or glyph == " "
+
+	local t = self:tile(ox, oy, z)
 	if t then
 		if to_remove then
 			table.remove_value(self.tiles, t)
@@ -99,8 +125,9 @@ end
 local grid = class()
 
 function grid:new(w, h)
-	self.cells = functional.generate(w, function(x)
-		return functional.generate(h, function(y)
+	self.size = vec2(w, h)
+	self.cells = functional.generate(self.size.y, function(y)
+		return functional.generate(self.size.x, function(x)
 			return cell(x, y)
 		end)
 	end)
@@ -109,37 +136,65 @@ end
 function grid:draw(w, h)
 	love.graphics.push("all")
 	for _, row in ipairs(self.cells) do
-		for i, v in ipairs(row) do
+		for _, v in ipairs(row) do
 			v:draw()
 		end
 	end
 	love.graphics.pop()
 end
 
+function grid:cell(x, y)
+	x = math.floor(x)
+	y = math.floor(y)
+	assert(x > 0 and x <= self.size.x, "x out of range")
+	assert(y > 0 and y <= self.size.y, "y out of range")
+	return self.cells[y][x]
+end
+
 function grid:clear(x, y)
-	self.cells[x][y]:clear()
+	self:cell(x, y):clear()
 end
 
 function grid:set(x, y, ox, oy, z, glyph, colour)
-	self.cells[x][y]:set(ox, oy, z, glyph, colour)
+	self:cell(x, y):set(ox, oy, z, glyph, colour)
 end
 
-function grid:set_template(x, y, z, template, colour)
-	local lines = template
-	local longest_line = functional.find_max(lines, function(v)
-		return #v
-	end)
-	local w = #longest_line
-	local h = #lines
-	local cell = self.cells[x][y]
-	for i, line in ipairs(lines) do
-		local oy = i - math.floor(h / 2)
-		for j = 1, #line do
-			local ox = j - math.floor(w / 2)
-			local glyph = line:sub(j, j)
-			cell:set(ox, oy, z, glyph, colour)
+function grid:set_template(x, y, template)
+	local cell = self:cell(x, y)
+	local z = #template - 1
+	for _, lines in ipairs(template) do
+		local longest_line = functional.find_max(lines, function(v)
+			if type(v) == "string" then
+				return #v
+			end
+			return nil
+		end)
+		local w = #longest_line
+		local h = #lines
+		local colour = 0xff00ff
+		local i = 0
+		for _, v in ipairs(lines) do
+			if type(v) == "number" then
+				--new line colour
+				colour = v
+			else
+				--new template line
+				i = i + 1
+				local line = v
+				local oy = i - math.floor(h / 2) - 1
+				for j = 1, #line do
+					local ox = j - math.floor(w / 2) - 1
+					local glyph = line:sub(j, j)
+					cell:set(ox, oy, z, glyph, colour)
+				end
+			end
 		end
+		--inverse z order
+		z = z - 1
 	end
 end
+
+--export
+grid.cell_size = cell_visual:vmul(tile_size):round()
 
 return grid
