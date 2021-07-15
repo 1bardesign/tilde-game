@@ -1,6 +1,7 @@
 local grid = require("grid")
 
 local palette = require("palette.pigment")
+local template = require("templates");
 
 local state = class()
 
@@ -9,200 +10,6 @@ function state:new()
 	self.background_colour = palette.dark
 end
 
-local template = {
-	player = {
-		{
-			palette.white,
-			"   ",
-			" @ ",
-			"   ",
-		},
-		{
-			palette.grey,
-			"  /",
-			" # ",
-			"   ",
-		},
-	},
-	flowers = {
-		{
-			{
-				palette.purple,
-				"   ",
-				"U  ",
-				"   ",
-			},
-			{
-				palette.fawn,
-				"   ",
-				"|  ",
-				"   ",
-			},
-		},
-		{
-			{
-				palette.purple,
-				"   ",
-				"   ",
-				"  U",
-			},
-			{
-				palette.fawn,
-				"   ",
-				"   ",
-				"  |",
-			},
-		},
-		{
-			{
-				palette.purple,
-				"   ",
-				" U ",
-				"   ",
-			},
-			{
-				palette.fawn,
-				"   ",
-				" | ",
-				"   ",
-			},
-		},
-		{
-			{
-				palette.fawn,
-				"   ",
-				" x ",
-				"   ",
-			},
-		},
-		{
-			{
-				palette.fawn,
-				"  x",
-				"   ",
-				"x  ",
-			},
-		},
-		{
-			{
-				palette.purple,
-				"   ",
-				" x ",
-				"   ",
-			},
-		},
-		{
-			{
-				palette.purple,
-				"   ",
-				"x  ",
-				"  x",
-			},
-		},
-	},
-	tree = {
-		{
-			{
-				palette.green,
-				"  #  ",
-				" ####",
-				"### #",
-			},
-			{
-				palette.brown,
-				"   ",
-				" O=",
-				"   ",
-			},
-			{
-				"   ",
-				",O ",
-				"   ",
-			},
-		},
-		{
-			{
-				palette.green,
-				" ####",
-				" ####",
-				"  #  ",
-			},
-			{
-				palette.brown,
-				"   ",
-				"=o ",
-				"   ",
-			},
-			{
-				palette.brown,
-				"   ",
-				" O,",
-				"   ",
-			},
-		},
-		{
-			{
-				palette.green,
-				"  ###",
-				"#####",
-				" ##  ",
-			},
-			{
-				palette.brown,
-				"   ",
-				" O ",
-				"   ",
-			},
-			{
-				palette.brown,
-				"   ",
-				"=o ",
-				"   ",
-			},
-			{
-				palette.brown,
-				"   ",
-				",O,",
-				"   ",
-			},
-		},
-	},
-	grass = {
-		{
-			{
-				palette.fawn,
-				",  ",
-				"   ",
-				"   ",
-			},
-		},
-		{
-			{
-				palette.fawn,
-				"   ",
-				" , ",
-				"   ",
-			},
-		},
-		{
-			{
-				palette.fawn,
-				"   ",
-				"   ",
-				"  ,",
-			},
-		},
-		{
-			{
-				palette.fawn,
-				"vvv",
-				"vvv",
-				"vvv",
-			},
-		},
-	},
-}
-
 function state:enter()
 	--setup anything to be done on state enter here (ie reset everything)
 	self.grid = grid(20, 10)
@@ -210,12 +17,13 @@ function state:enter()
 	for y = 1, self.grid.size.y do
 		for x = 1, self.grid.size.x do
 			local t = template.grass
-			if love.math.random() < 0.2 then
-				if love.math.random() < 0.5 then
-					t = template.flowers
-				else
-					t = template.tree
-				end
+			local r = love.math.random();
+			if r < 0.1 then
+				t = template.flowers
+			elseif r < 0.2 then
+				t = template.tree
+			elseif r < 0.22 then
+				t = template.rocks
 			end
 			self.grid:set_template(
 				x, y,

@@ -33,9 +33,12 @@ function tile:draw()
 		math.floor(self.offset.x * tile_size.x),
 		math.floor((self.offset.y * cell_step_y - self.z * cell_step_z) * tile_size.y)
 	)
+	if self.z > 1 then
+		-- TODO: Make blurry / faded / something
+	end
 	love.graphics.setColor(color.unpack_argb(self.colour))
 	--note: wont work for non-ascii, we can cross that bridge when we get there
-	local b = self.glyph:byte(1)
+	local b = self.glyph:byte(1);
 	local x = math.floor(b % texture_geometry.x)
 	local y = math.floor(b / texture_geometry.x)
 	quad:setViewport(
@@ -74,7 +77,7 @@ function cell:draw()
 	)
 
 	if love.keyboard.isDown("`") then
-		love.graphics.setColor(colour.unpack_argb(0xff404040))
+		love.graphics.setColor(colour.unpack_argb(0x1f404040))
 		love.graphics.rectangle(
 			"line",
 			-tile_size.x,
@@ -198,3 +201,6 @@ end
 grid.cell_size = cell_visual:vmul(tile_size):round()
 
 return grid
+
+
+
