@@ -35,7 +35,9 @@ local function parse_template(template, f)
 				for j = 1, #line do
 					local ox = j + cx - 1
 					local glyph = line:sub(j, j)
-					f(ox, oy, z, glyph, colour)
+					if glyph ~= " " then
+						f(ox, oy, z, glyph, colour)
+					end
 				end
 			end
 		end
