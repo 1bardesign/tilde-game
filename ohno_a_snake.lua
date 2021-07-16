@@ -57,25 +57,31 @@ end
 
 function snake:new(game_state, ox, oy)
 	self.game_state = game_state;
-
 	self.dir = vec2( 0, -1 );
 	self.length = 6;
-	self.parts = { part( ox, oy, self.dir, type.head ), part( ox, oy + 1, self.dir, type.body ), part( ox, oy + 2, self.dir, type.body ), part( ox, oy + 3, self.dir, type.body ), part( ox, oy + 4, self.dir, type.body ), part( ox, oy + 5, self.dir, type.tail ) };
 	self.choice_delay = 0;
-
-	-- TODO: Render separately from grid?
-	for i, p in ipairs( self.parts ) do
-		local pos = p.pos;
-		self.game_state.grid:clear(pos:unpack())
-		self.game_state.grid:set_template(
-			pos.x, pos.y,
-			get_template( p.type, p.dir )
-		)
-	end
+	self.parts = {
+		part( ox, oy, self.dir, type.head ),
+		part( ox, oy + 1, self.dir, type.body ),
+		part( ox, oy + 2, self.dir, type.body ),
+		part( ox, oy + 3, self.dir, type.body ),
+		part( ox, oy + 4, self.dir, type.body ),
+		part( ox, oy + 5, self.dir, type.tail )
+	}
 end
 
 function snake:update(dt)
 	-- Wiggle / animate etc
+end
+
+function snake:draw(display)
+	local grid = self.game_state.grid
+	for i, p in ipairs( self.parts ) do
+		local pos = p.pos:vmul(grid.cell_size)
+		grid:parse_template(get_template( p.type, p.dir ), function(ox, oy, z, glyph, colour)
+			display:add(pos.x + ox, pos.y + oy, z, glyph, colour)
+		end)
+	end
 end
 
 function snake:tick()
@@ -108,17 +114,10 @@ function snake:tick()
 					p.prev_pos = p.pos;
 					p.pos = new_pos;
 				end
-
-				-- TODO: Update grid / render
+				
 				for i=1,#self.parts do
 					local p = self.parts[i];
 					p.dir = i == 1 and self.dir or self.parts[i-1].pos:vsub(p.pos);
-
-					self.game_state.grid:clear(p.prev_pos:unpack())
-					self.game_state.grid:set_template(
-						p.pos.x, p.pos.y,
-						get_template( p.type, p.dir )
-					)
 				end
 
 				break;

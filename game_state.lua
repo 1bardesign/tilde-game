@@ -13,6 +13,10 @@ end
 
 function state:enter()
 	--setup anything to be done on state enter here (ie reset everything)
+	self.display = require("ascii3d")()
+	self.grid = grid(20, 10)
+	self.objects = {}
+	
 	local width = 20
 	local height = 10
 
@@ -38,26 +42,54 @@ function state:enter()
 	end
 
 	self.player_pos = vec2(10, 5)
-	self.grid:clear(self.player_pos:unpack())
-	self.grid:set_template(
-		self.player_pos.x, self.player_pos.y,
-		template.player
-	)
 
-	self.snake = snake( self, 12, 5 )
+	--temporary inline player gameobject
+	table.insert(self.objects, {
+		pos = self.player_pos,
+		template = template.player,
+		grid = self.grid, --todo: refactor, we only need this for template parsing
+		move = vec2(),
+		update = function(self)
+			if love.keyboard.isDown("up", "w") then self.move:sset(0, -1) end
+			if love.keyboard.isDown("down", "s") then self.move:sset(0, 1) end
+			if love.keyboard.isDown("left", "a") then self.move:sset(-1, 0) end
+			if love.keyboard.isDown("right", "d") then self.move:sset(1, 0) end
+		end,
+		tick = function(self)
+			self.pos:vaddi(self.move)
+			self.move:sset(0)
+		end,
+		draw = function(self, display)
+			local x, y = self.pos:vmul(self.grid.cell_size):unpack()
+			self.grid:parse_template(self.template, function(ox, oy, z, glyph, colour)
+				display:add(x + ox, y + oy, z, glyph, colour)
+			end)
+		end,
+	})
+
+	table.insert(self.objects, snake( self, 12, 5, self.grid ))
+	
 	self.time_since_last_tick = 0
 end
 
+function state:tick()
+	for _, v in ipairs(self.objects) do
+		v:tick()
+	end
+end
+
 function state:update(dt)
-	-- Game update
+	-- tick in soft-realtime
 	self.time_since_last_tick = self.time_since_last_tick + dt
 	if self.time_since_last_tick > 0.33 then
 		self.time_since_last_tick = 0
-		self.snake:tick()
+		self:tick()
 	end
 
-	-- Render update
-	self.snake:update( dt )
+	--update everything
+	for _, v in ipairs(self.objects) do
+		v:update(dt)
+	end
 end
 
 function state:draw()
@@ -67,10 +99,14 @@ function state:draw()
 	)
 	love.graphics.scale(2)
 	love.graphics.translate(
-		self.player_pos:vmul(grid.cell_size):smuli(-1):roundi():unpack()
+		self.player_pos:vmul(grid.cell_size):smuli(8):smuli(-1):roundi():unpack()
 	)
 	love.graphics.clear(colour.unpack_argb(self.background_colour))
-	self.grid:draw()
+	self.grid:draw(self.display)
+	for _, v in ipairs(self.objects) do
+		v:draw(self.display)
+	end
+	self.display:draw()
 end
 
 function state:keypressed(k)

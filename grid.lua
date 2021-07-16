@@ -4,18 +4,10 @@
 	written in a pretty inefficient way for now :)
 ]]
 
-local texture = love.graphics.newImage("cga8x8thick.png")
-texture:setFilter("nearest", "nearest")
-local texture_geometry = vec2(16, 16)
-local quad = love.graphics.newQuad(0,0,0,0,texture:getDimensions())
-
-local tile_size = vec2(texture:getDimensions()):vdivi(texture_geometry)
+--config
 local cell_size = vec2(3, 3)
-local cell_step_y = 1
-local cell_step_z = 1
---visual size, for debug rectangle and maybe culling?
-local cell_visual = cell_size:smul(1, cell_step_y)
 
+--
 local tile = class({
 	name = "tile",
 })
@@ -27,28 +19,14 @@ function tile:new(ox, oy, z, glyph, colour)
 	self.colour = colour
 end
 
-function tile:draw()
-	love.graphics.push()
-	love.graphics.translate(
-		math.floor(self.offset.x * tile_size.x),
-		math.floor((self.offset.y * cell_step_y - self.z * cell_step_z) * tile_size.y)
+function tile:draw(x, y, display)
+	display:add(
+		x + self.offset.x,
+		y + self.offset.y,
+		self.z,
+		self.glyph,
+		self.colour
 	)
-	if self.z > 1 then
-		-- TODO: Make blurry / faded / something
-	end
-	love.graphics.setColor(color.unpack_argb(self.colour))
-	--note: wont work for non-ascii, we can cross that bridge when we get there
-	local b = self.glyph:byte(1);
-	local x = math.floor(b % texture_geometry.x)
-	local y = math.floor(b / texture_geometry.x)
-	quad:setViewport(
-		x * tile_size.x,
-		y * tile_size.y,
-		tile_size.x,
-		tile_size.y
-	)
-	love.graphics.draw(texture, quad)
-	love.graphics.pop()
 end
 
 function tile:set(glyph, colour)
@@ -69,30 +47,12 @@ function cell:new(x, y)
 	self.tiles = {}
 end
 
-function cell:draw()
-	love.graphics.push()
-	love.graphics.translate(
-		math.floor(self.pos.x * cell_visual.x * tile_size.x),
-		math.floor(self.pos.y * cell_visual.y * tile_size.y)
-	)
-
-	if love.keyboard.isDown("`") then
-		love.graphics.setColor(colour.unpack_argb(0x1f404040))
-		love.graphics.rectangle(
-			"line",
-			-tile_size.x,
-			-tile_size.y,
-			tile_size.x * cell_visual.x,
-			tile_size.y * cell_visual.y
-		)
-	end
-
-	table.stable_sort(self.tiles, tile.compare_z)
+function cell:draw(display)
+	local x = self.pos.x * cell_size.x
+	local y = self.pos.y * cell_size.y
 	for _, v in ipairs(self.tiles) do
-		v:draw()
+		v:draw(x, y, display)
 	end
-
-	love.graphics.pop()
 end
 
 function cell:tile(ox, oy, z)
@@ -136,14 +96,12 @@ function grid:new(w, h)
 	end)
 end
 
-function grid:draw(w, h)
-	love.graphics.push("all")
+function grid:draw(display)
 	for _, row in ipairs(self.cells) do
 		for _, v in ipairs(row) do
-			v:draw()
+			v:draw(display)
 		end
 	end
-	love.graphics.pop()
 end
 
 function grid:cell(x, y)
@@ -162,8 +120,7 @@ function grid:set(x, y, ox, oy, z, glyph, colour)
 	self:cell(x, y):set(ox, oy, z, glyph, colour)
 end
 
-function grid:set_template(x, y, template)
-	local cell = self:cell(x, y)
+function grid:parse_template(template, f)
 	local z = #template - 1
 	for _, lines in ipairs(template) do
 		local longest_line = functional.find_max(lines, function(v)
@@ -174,6 +131,8 @@ function grid:set_template(x, y, template)
 		end)
 		local w = #longest_line
 		local h = #lines
+		local cx = math.floor((cell_size.x - w) / 2)
+		local cy = math.floor((cell_size.y - h) / 2)
 		local colour = 0xff00ff
 		local i = 0
 		for _, v in ipairs(lines) do
@@ -184,11 +143,11 @@ function grid:set_template(x, y, template)
 				--new template line
 				i = i + 1
 				local line = v
-				local oy = i - math.floor(h / 2) - 1
+				local oy = i + cy - 1
 				for j = 1, #line do
-					local ox = j - math.floor(w / 2) - 1
+					local ox = j + cx - 1
 					local glyph = line:sub(j, j)
-					cell:set(ox, oy, z, glyph, colour)
+					f(ox, oy, z, glyph, colour)
 				end
 			end
 		end
@@ -197,8 +156,15 @@ function grid:set_template(x, y, template)
 	end
 end
 
+function grid:set_template(x, y, template)
+	local cell = self:cell(x, y)
+	grid:parse_template(template, function(ox, oy, z, glyph, colour)
+		cell:set(ox, oy, z, glyph, colour)
+	end)
+end
+
 --export
-grid.cell_size = cell_visual:vmul(tile_size):round()
+grid.cell_size = cell_size
 
 return grid
 
