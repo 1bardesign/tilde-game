@@ -14,6 +14,7 @@ function player:new(game_state, pos)
 	self.camera_pos = pos -- hax
 	self.tile_pos_prev = pos:copy()
 	self.tile_pos = pos:copy()
+	self.tile_pos_wander = pos:copy()
 	self.tile_lerp = 0
 	self.is_lerping = false
 	self.jump_dir = vec2( 0, 1 )
@@ -27,8 +28,8 @@ function player:update(dt)
 
 		self.tile_lerp = math.min( 1, self.tile_lerp + dt * 10 )
 		local dt = self.tile_lerp
-		self.camera_pos = vec2.lerp( self.tile_pos_prev, self.tile_pos, dt )
-		self.pos = vec2.lerp( self.tile_pos_prev, self.tile_pos, dt )
+		self.camera_pos = vec2.lerp( self.tile_pos_prev, self.tile_pos_wander, dt )
+		self.pos = vec2.lerp( self.tile_pos_prev, self.tile_pos_wander, dt )
 		local jump_height = ( 1 - (2*dt-1)*(2*dt-1) ) * 0.2;
 		self.pos:vsubi( self.jump_dir:smul( jump_height, jump_height ) )
 		
@@ -43,8 +44,12 @@ function player:tick()
 		local move = table.shift(self.move_queue)
 		local target_pos = self.tile_pos:vadd(move)
 		if not self.grid:solid_at(target_pos:unpack()) then
-			self.tile_pos_prev = self.tile_pos:copy()
 			self.tile_pos:vset(target_pos)
+			self.tile_pos_prev = self.tile_pos_wander:copy()
+			local wander_rad = 0.5 / 3
+			self.tile_pos_wander:sset(wander_rad, 0)
+				:rotatei(love.math.random() * math.tau)
+				:vaddi(self.tile_pos)
 
 			if move.x == 0 then
 				self.jump_dir = vec2( 0.35, 0.6 )
@@ -73,7 +78,7 @@ function player:keypressed(k)
 end
 
 function player:draw(display)
-	self:draw_template_at(display, self.pos:sadd(0, 0.1), self.template)
+	self:draw_template_at(display, self.pos, self.template)
 end
 
 return player
