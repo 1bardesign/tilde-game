@@ -3,6 +3,7 @@ local grid = require("grid")
 local palette = require("palette.pigment")
 local template = require("templates");
 local snake = require("ohno_a_snake");
+local sounds = require("sounds");
 
 local state = class()
 
@@ -41,7 +42,6 @@ function state:enter()
 		end
 	end
 
-	--temporary inline player gameobject
 	self.player = require("player")(self, vec2(10, 5))
 	table.insert(self.objects, self.player)
 

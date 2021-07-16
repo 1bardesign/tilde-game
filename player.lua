@@ -1,3 +1,9 @@
+--[[
+	the majestic player
+]]
+
+local sounds = require("sounds");
+
 local player = class({
 	extends = require("gameobject"),
 })
@@ -19,6 +25,8 @@ function player:tick()
 		local move = table.shift(self.move_queue)
 		--if not blocked,
 		self.tile_pos:vaddi(move)
+		sounds.move:setVolume(0.2)
+		sounds.move:play()
 	end
 end
 
