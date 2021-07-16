@@ -41,10 +41,12 @@ return function(game_state)
 					false
 				)
 			elseif type == 220 then
+				local has_rock_above = y == 1 or exported_map.layers[1].data[ x + ( y - 2 ) * grid.size.x ] == 220;
+
 				-- rocks
 				grid:set(
 					x, y,
-					table.pick_random(template.rocks),
+					has_rock_above and table.pick_random(template.rock_full) or table.pick_random(template.rocks),
 					true
 				)
 			elseif type == 2 then

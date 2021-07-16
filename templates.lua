@@ -252,6 +252,16 @@ local template = {
 			},
 		},
 	},	
+	rock_full = {
+		{
+			{
+				palette.grey,
+				"²²²",
+				"²²²",
+				"²²²",
+			},
+		},
+	},
 	rocks = {
 		{
 			{
