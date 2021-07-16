@@ -2,7 +2,9 @@
 local palette = require("palette.pigment")
 local template = require("templates");
 
-local snake = class()
+local snake = class({
+	extends = require("gameobject")
+})
 
 local type = { 
 	head = 1,
@@ -55,7 +57,7 @@ local get_template = function( part_type, dir )
 end
 
 function snake:new(game_state, ox, oy)
-	self.game_state = game_state;
+	self:super(game_state)
 	self.dir = vec2( 0, -1 );
 	self.length = 6;
 	self.parts = {
@@ -73,12 +75,9 @@ function snake:update(dt)
 end
 
 function snake:draw(display)
-	local grid = self.game_state.grid
+	local grid = self.grid
 	for i, p in ipairs( self.parts ) do
-		local pos = p.pos:vmul(grid.cell_size)
-		grid:parse_template(get_template( p.type, p.dir ), function(ox, oy, z, glyph, colour)
-			display:add(pos.x + ox, pos.y + oy, z, glyph, colour)
-		end)
+		self:draw_template_at(display, p.pos, get_template( p.type, p.dir ))
 	end
 end
 

@@ -41,33 +41,12 @@ function state:enter()
 		end
 	end
 
-	self.player_pos = vec2(10, 5)
-
 	--temporary inline player gameobject
-	table.insert(self.objects, {
-		pos = self.player_pos,
-		template = template.player,
-		grid = self.grid, --todo: refactor, we only need this for template parsing
-		move = vec2(),
-		update = function(self)
-			if love.keyboard.isDown("up", "w") then self.move:sset(0, -1) end
-			if love.keyboard.isDown("down", "s") then self.move:sset(0, 1) end
-			if love.keyboard.isDown("left", "a") then self.move:sset(-1, 0) end
-			if love.keyboard.isDown("right", "d") then self.move:sset(1, 0) end
-		end,
-		tick = function(self)
-			self.pos:vaddi(self.move)
-			self.move:sset(0)
-		end,
-		draw = function(self, display)
-			local x, y = self.pos:vmul(self.grid.cell_size):unpack()
-			self.grid:parse_template(self.template, function(ox, oy, z, glyph, colour)
-				display:add(x + ox, y + oy, z, glyph, colour)
-			end)
-		end,
-	})
+	self.player = require("player")(self, vec2(10, 5))
+	table.insert(self.objects, self.player)
 
-	table.insert(self.objects, snake( self, 12, 5, self.grid ))
+	self.snake = snake( self, 12, 5, self.grid )
+	table.insert(self.objects, self.snake)
 	
 	self.time_since_last_tick = 0
 end
@@ -93,24 +72,31 @@ function state:update(dt)
 end
 
 function state:draw()
+	--set up camera
 	love.graphics.translate(
 		love.graphics.getWidth() / 2,
 		love.graphics.getHeight() / 2
 	)
 	love.graphics.scale(2)
 	love.graphics.translate(
-		self.player_pos:vmul(grid.cell_size):smuli(8):smuli(-1):roundi():unpack()
+		self.player.pos:vmul(grid.cell_size):smuli(8):smuli(-1):unpack()
 	)
+	--draw world
 	love.graphics.clear(colour.unpack_argb(self.background_colour))
 	self.grid:draw(self.display)
+	--draw objects
 	for _, v in ipairs(self.objects) do
 		v:draw(self.display)
 	end
+	--display
 	self.display:draw()
 end
 
 function state:keypressed(k)
-	--handle keypresses
+	--hand off to objects
+	for _, v in ipairs(self.objects) do
+		v:keypressed(k)
+	end
 end
 
 return state
