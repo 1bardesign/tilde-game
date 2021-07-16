@@ -41,20 +41,23 @@ end
 function player:tick()
 	if #self.move_queue > 0 then
 		local move = table.shift(self.move_queue)
-		--if not blocked,
-		self.tile_pos_prev = self.tile_pos:copy()
-		self.tile_pos:vaddi(move)
+		local target_pos = self.tile_pos:vadd(move)
+		if not self.grid:solid_at(target_pos:unpack()) then
+			self.tile_pos_prev = self.tile_pos:copy()
+			self.tile_pos:vset(target_pos)
 
-		if move.x == 0 then
-			self.jump_dir = vec2( 0.35, 0.6 )
-		else
-			self.jump_dir = vec2( 0, 1 )
+			if move.x == 0 then
+				self.jump_dir = vec2( 0.35, 0.6 )
+			else
+				self.jump_dir = vec2( 0, 1 )
+			end
+	
+			self.tile_lerp = 0
+			self.is_lerping = true
 		end
-
-		self.tile_lerp = 0
-		self.is_lerping = true
 		sounds.move:setVolume(0.2)
 		sounds.move:play()
+		--todo: blocked sound
 	end
 end
 
