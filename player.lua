@@ -23,10 +23,14 @@ end
 function player:tick()
 	if #self.move_queue > 0 then
 		local move = table.shift(self.move_queue)
+		local target_pos = self.tile_pos:vadd(move)
 		--if not blocked,
-		self.tile_pos:vaddi(move)
+		if not self.grid:solid_at(target_pos:unpack()) then
+			self.tile_pos:vset(target_pos)
+		end
 		sounds.move:setVolume(0.2)
 		sounds.move:play()
+		--todo: blocked sound
 	end
 end
 
