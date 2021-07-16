@@ -45,6 +45,10 @@ function state:new()
 		uniform vec2 distortion_flow;
 		uniform float distortion_scale;
 
+		uniform Image noise_tex;
+		uniform vec2 noise_res;
+		uniform vec2 noise_offset;
+
 		uniform Image blurred;
 		uniform Image last_frame;
 
@@ -81,30 +85,56 @@ function state:new()
 			//sample distorted
 			vec2 uv_distortion_offset = distortion / res * distortion_amount;
 			zoom_uv -= uv_distortion_offset.yx * distortion_distance;
-			//and scaled
+
+			//and feedback scaled old frame
 			zoom_uv = (zoom_uv - vec2(0.5)) * 0.99 + vec2(0.5);
 
 			float old_frame_amount = clamp(mix(0.1, 0.9, d), 0.0, 1.0);
 			vec4 feedback_px = Texel(last_frame, zoom_uv);
 			feedback_px = mix(feedback_px, vignette_colour, 0.1);
 			c = mix(c, feedback_px, old_frame_amount);
+
+			//and finally noise grain
+			vec4 grain = Texel(noise_tex, px / noise_res + noise_offset);
+			c.rgb += (grain.rgb - vec3(0.5)) * 2.0 * 0.01 * grain.a;
+
 			return c;
 		}
 	]])
 	do
-		local res = 512
-		local id = love.image.newImageData(res, res, "rg16")
-		id:mapPixel(function(x, y)
-			local period = 40.1
-			return
-				love.math.noise(x / period, y / period),
-				love.math.noise((y + 190) / period, (x - 360) / period)
-		end)
-		local distortion_tex = love.graphics.newImage(id)
-		distortion_tex:setWrap("repeat")
-		self.shader:send("distortion_tex", distortion_tex)
-		self.shader:send("distortion_res", {distortion_tex:getDimensions()})
+		do
+			local res = 512
+			local id = love.image.newImageData(res, res, "rg16")
+			id:mapPixel(function(x, y)
+				local period = 40.1
+				return
+					love.math.noise(x / period, y / period),
+					love.math.noise((y + 190) / period, (x - 360) / period)
+			end)
+			local distortion_tex = love.graphics.newImage(id)
+			distortion_tex:setWrap("repeat")
+			self.shader:send("distortion_tex", distortion_tex)
+			self.shader:send("distortion_res", {distortion_tex:getDimensions()})
+		end
+
+		do
+			local res = 512
+			local id = love.image.newImageData(res, res, "rgba8")
+			id:mapPixel(function(x, y)
+				return
+					love.math.random(),
+					love.math.random(),
+					love.math.random(),
+					love.math.random()
+			end)
+			local noise_tex = love.graphics.newImage(id)
+			noise_tex:setWrap("repeat")
+			self.shader:send("noise_tex", noise_tex)
+			self.shader:send("noise_res", {noise_tex:getDimensions()})
+		end
+
 		self.shader:send("res", {love.graphics.getDimensions()})
+
 		self.shader:send("vignette_colour", {colour.unpack_argb(palette.dark)})
 		self.shader:send("distortion_flow", {3.3, 2.3})
 	end
@@ -199,6 +229,7 @@ function state:draw()
 		self.shader:send("camera_scale", 2)
 		self.shader:send("last_frame", self.last_frame)
 		self.shader:send("blurred", self.blurred)
+		self.shader:send("noise_offset", {love.math.random(), love.math.random()})
 		love.graphics.setColor(1, 1, 1, 1)
 		love.graphics.draw(self.canvas)
 
