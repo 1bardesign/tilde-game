@@ -11,7 +11,7 @@ local player = class({
 function player:new(game_state, pos)
 	self:super(game_state)
 	self.pos = pos
-	self.camera_pos = pos -- hax
+	self.camera_pos = pos:copy()
 	self.tile_pos_prev = pos:copy()
 	self.tile_pos = pos:copy()
 	self.tile_pos_wander = pos:copy()
@@ -24,20 +24,17 @@ end
 
 function player:update(dt)
 	if self.is_lerping then
-		-- TODO: uncouple camera pos from player pos
-
 		self.tile_lerp = math.min( 1, self.tile_lerp + dt * 10 )
-		local dt = self.tile_lerp
-		self.camera_pos = vec2.lerp( self.tile_pos_prev, self.tile_pos_wander, dt )
-		self.pos = vec2.lerp( self.tile_pos_prev, self.tile_pos_wander, dt )
-		local jump_height = ( 1 - (2*dt-1)*(2*dt-1) ) * 0.2;
+		local f = self.tile_lerp
+		self.pos = vec2.lerp(self.tile_pos_prev, self.tile_pos_wander, f)
+		local jump_height = ( 1 - (2*f-1)*(2*f-1) ) * 0.2;
 		self.pos:vsubi( self.jump_dir:smul( jump_height, jump_height ) )
 		
 		if self.tile_lerp >= 1 then
 			self.is_lerping = false
 		end
 	end
-	self:tick()
+	self.camera_pos:lerpi(self.pos, dt * 5)
 end
 
 function player:tick()
