@@ -10,8 +10,7 @@ return function(game_state)
 	assert( #exported_map.layers[1].data == width * height );
 
 	game_state.grid = grid(width, height)
-	game_state.player_spawns = {}
-	game_state.snake_spawns = {}
+	game_state.spawns = {}
 	
 	local grid = game_state.grid;
 	-- parse data
@@ -33,13 +32,22 @@ return function(game_state)
 					nil,
 					true
 				)
-			elseif type == 47 then
-				-- flowers
+			elseif type == 8 then
+				-- mushrooms
 				grid:set(
 					x, y,
-					table.pick_random(template.flowers),
+					table.pick_random(template.mushrooms),
 					false
 				)
+			elseif type == 47 then
+				-- flowers
+				if love.math.random() < 0.5 then
+					grid:set(
+						x, y,
+						table.pick_random(template.flowers),
+						false
+					)
+				end
 			elseif type == 220 then
 				local has_rock_above = y == 1 or exported_map.layers[1].data[ x + ( y - 2 ) * grid.size.x ] == 220;
 
@@ -49,10 +57,15 @@ return function(game_state)
 					has_rock_above and table.pick_random(template.rock_full) or table.pick_random(template.rocks),
 					true
 				)
+			elseif type == 96 then
+				-- water
+				grid:set(
+					x, y,
+					table.pick_random(template.water),
+					false
+				)
 			elseif type == 2 then
-				table.insert( game_state.player_spawns, vec2( x, y ) )
-			elseif type == 84 then
-				table.insert( game_state.snake_spawns, vec2( x, y ) )
+				table.insert( game_state.spawns, vec2( x, y ) )
 			else
 				assert( type == 0, tostring( type ) )
 

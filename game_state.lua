@@ -17,14 +17,13 @@ function state:enter()
 	
 	require("generate_world")(self) -- populates the structures below
 	assert( self.grid )
-	assert( self.player_spawns )
-	assert( self.snake_spawns )
+	assert( self.spawns )
 
-	local player_spawn = tablex.pick_random( self.player_spawns );
+	local player_spawn = tablex.take_random( self.spawns );
 	self.player = require("player")(self, player_spawn )
 	table.insert(self.objects, self.player)
 
-	local snake_spawn = tablex.pick_random( self.snake_spawns );
+	local snake_spawn = tablex.take_random( self.spawns );
 	self.snake = require("ohno_a_snake")( self, snake_spawn.x, snake_spawn.y, self.grid )
 	table.insert(self.objects, self.snake)
 	

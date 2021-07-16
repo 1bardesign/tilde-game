@@ -105,6 +105,32 @@ local template = {
 			},
 		},
 	},
+	mushrooms = {
+		{
+			{
+				palette.purple,
+				"   ",
+				" " .. string.char(24) .. " ",
+				"   ",
+			},
+		},
+		{
+			{
+				palette.purple,
+				string.char(24) .. "  ",
+				"   ",
+				"  " .. string.char(24)
+			},
+		},
+		{
+			{
+				palette.purple,
+				"  " .. string.char(24),
+				"   ",
+				string.char(24) .. "  ",
+			},
+		},
+	},
 	tree = {
 		{
 			{
@@ -309,6 +335,22 @@ local template = {
 				"   ",
 				" ±Ü",
 				"±±±",
+			},
+		},
+	},
+	water = {
+		{
+			{
+				palette.blue,
+				"   ",
+				"   ",
+				"   ",
+			},
+			{
+				palette.blue,
+				"²²²",
+				"²²²",
+				"²²²",
 			},
 		},
 	},
