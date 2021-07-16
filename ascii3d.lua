@@ -39,6 +39,7 @@ function ascii3d:draw()
 			-- TODO: Make blurry / faded / something
 			--(likely write out z to a separate mask for various effects)
 		end
+
 		local sx = x * tile_size.x
 		local sy = (y - z) * tile_size.y
 		local b = glyph:byte(1)

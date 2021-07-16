@@ -79,10 +79,13 @@ function grid:new(w, h)
 	end)
 end
 
-function grid:draw(display)
+function grid:draw(display, near)
+	local halfsize = vec2(15, 10)
 	for _, row in ipairs(self.cells) do
 		for _, v in ipairs(row) do
-			v:draw(display)
+			if intersect.aabb_point_overlap(near, halfsize, v.pos) then
+				v:draw(display)
+			end
 		end
 	end
 end
