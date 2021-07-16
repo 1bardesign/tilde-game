@@ -18,8 +18,7 @@ local part = function( ox, oy, dir, type )
 end
 
 local can_enter_cell = function( parts, grid, x, y )
-	local in_bounds = x >= 1 and x <= grid.size.x and y >= 1 and y <= grid.size.y;
-	if not in_bounds then 
+	if grid:solid_at(x, y) then
 		return false;
 	else
 		for i=2,#parts do
