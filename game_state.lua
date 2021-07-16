@@ -2,6 +2,7 @@ local grid = require("grid")
 
 local palette = require("palette.pigment")
 local template = require("templates");
+local snake = require("ohno_a_snake");
 
 local state = class()
 
@@ -12,8 +13,12 @@ end
 
 function state:enter()
 	--setup anything to be done on state enter here (ie reset everything)
-	self.grid = grid(20, 10)
+	local width = 20
+	local height = 10
 
+	self.grid = grid(width, height)
+
+	-- TODO: Move world creation to separate file
 	for y = 1, self.grid.size.y do
 		for x = 1, self.grid.size.x do
 			local t = template.grass
@@ -38,10 +43,21 @@ function state:enter()
 		self.player_pos.x, self.player_pos.y,
 		template.player
 	)
+
+	self.snake = snake( self, 12, 5 )
+	self.time_since_last_tick = 0
 end
 
 function state:update(dt)
-	--update each tick
+	-- Game update
+	self.time_since_last_tick = self.time_since_last_tick + dt
+	if self.time_since_last_tick > 0.33 then
+		self.time_since_last_tick = 0
+		self.snake:tick()
+	end
+
+	-- Render update
+	self.snake:update( dt )
 end
 
 function state:draw()
