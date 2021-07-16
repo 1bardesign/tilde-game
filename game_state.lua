@@ -77,20 +77,19 @@ end
 function state:enter()
 	--setup anything to be done on state enter here (ie reset everything)
 	self.display = require("ascii3d")()
-	self.grid = grid(20, 10)
 	self.objects = {}
 	
-	local width = 20
-	local height = 10
+	require("generate_world")(self) -- populates the structures below
+	assert( self.grid )
+	assert( self.player_spawns )
+	assert( self.snake_spawns )
 
-	self.grid = grid(width, height)
-
-	require("generate_world")(self)
-
-	self.player = require("player")(self, vec2(10, 5))
+	local player_spawn = tablex.pick_random( self.player_spawns );
+	self.player = require("player")(self, player_spawn )
 	table.insert(self.objects, self.player)
 
-	self.snake = require("ohno_a_snake")( self, 12, 5, self.grid )
+	local snake_spawn = tablex.pick_random( self.snake_spawns );
+	self.snake = require("ohno_a_snake")( self, snake_spawn.x, snake_spawn.y, self.grid )
 	table.insert(self.objects, self.snake)
 	
 	self.time_since_last_tick = 0

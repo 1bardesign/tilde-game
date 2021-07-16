@@ -78,18 +78,30 @@ local template = {
 		},
 		{
 			{
-				palette.purple,
+				palette.yellow,
 				"   ",
-				" ? ",
+				" O ",
+				"   ",
+			},
+			{
+				palette.green,
+				"   ",
+				" v ",
 				"   ",
 			},
 		},
 		{
 			{
-				palette.purple,
+				palette.yellow,
 				"   ",
-				"?  ",
-				"  ?",
+				"O  ",
+				"  O",
+			},
+			{
+				palette.green,
+				"   ",
+				"v  ",
+				"  v",
 			},
 		},
 	},
@@ -240,13 +252,63 @@ local template = {
 			},
 		},
 	},	
+	rock_full = {
+		{
+			{
+				palette.grey,
+				"²²²",
+				"²²²",
+				"²²²",
+			},
+		},
+	},
 	rocks = {
 		{
 			{
-				palette.fawn,
+				palette.grey,
+				"Ü²²",
 				"²²²",
 				"²²²",
+			},
+		},
+		{
+			{
+				palette.grey,
+				"±±±",
+				"±±±",
+				"±±±",
+			},
+		},
+		{
+			{
+				palette.grey,
+				"±±±",
+				"²²±",
 				"²²²",
+			},
+		},
+		{
+			{
+				palette.grey,
+				"±± ",
+				"±±±",
+				"±²²",
+			},
+		},
+		{
+			{
+				palette.grey,
+				"   ",
+				" ±±",
+				"±±±",
+			},
+		},
+		{
+			{
+				palette.grey,
+				"   ",
+				" ±Ü",
+				"±±±",
 			},
 		},
 	},
