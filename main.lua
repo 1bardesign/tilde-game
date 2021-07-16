@@ -5,12 +5,46 @@ local game_state = state_machine({
 	--todo: title, win
 }, "game")
 
+love.keyboard.setKeyRepeat(true)
+
+local times = {}
+
 function love.update(dt)
+	times = {}
+
+	table.insert(times, "update")
+	table.insert(times, love.timer.getTime())
 	game_state:update(dt)
+	table.insert(times, love.timer.getTime())
 end
 
 function love.draw()
+	table.insert(times, "draw")
+	table.insert(times, love.timer.getTime())
 	game_state:draw()
+	table.insert(times, love.timer.getTime())
+
+	if love.keyboard.isDown("`") then
+		love.graphics.push()
+		love.graphics.translate(10, 10)
+		local stats = love.graphics.getStats()
+		for _, v in ipairs({
+			("fps: %d"):format(love.timer.getFPS()),
+			("vram: %dmb"):format(stats.texturememory / 1024 / 1024),
+			("drawcalls: %d (%d auto-batched)"):format(stats.drawcalls, stats.drawcallsbatched),
+		}) do
+			love.graphics.print(v)
+			love.graphics.translate(0, 15)
+		end
+		for i = 1, #times, 3 do
+			local name = times[i]
+			local start = times[i+1]
+			local finish = times[i+2]
+			love.graphics.print(("%s %0.3fms"):format(name, (finish - start) * 1000))
+			love.graphics.translate(0, 15)
+		end
+		love.graphics.pop()
+	end
 end
 
 function love.keypressed(k)
