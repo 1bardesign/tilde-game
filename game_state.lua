@@ -2,6 +2,7 @@ local grid = require("grid")
 
 local palette = require("palette.pigment")
 local template = require("templates");
+local snake = require("ohno_a_snake");
 
 local state = class()
 
@@ -15,7 +16,13 @@ function state:enter()
 	self.display = require("ascii3d")()
 	self.grid = grid(20, 10)
 	self.objects = {}
+	
+	local width = 20
+	local height = 10
 
+	self.grid = grid(width, height)
+
+	-- TODO: Move world creation to separate file
 	for y = 1, self.grid.size.y do
 		for x = 1, self.grid.size.x do
 			local t = template.grass
@@ -35,30 +42,53 @@ function state:enter()
 	end
 
 	self.player_pos = vec2(10, 5)
+
 	--temporary inline player gameobject
 	table.insert(self.objects, {
 		pos = self.player_pos,
 		template = template.player,
 		grid = self.grid, --todo: refactor, we only need this for template parsing
+		move = vec2(),
 		update = function(self)
-			if love.keyboard.isDown("up", "w") then self.pos:saddi(0, -1) end
-			if love.keyboard.isDown("down", "s") then self.pos:saddi(0, 1) end
-			if love.keyboard.isDown("left", "a") then self.pos:saddi(-1, 0) end
-			if love.keyboard.isDown("right", "d") then self.pos:saddi(1, 0) end
+			if love.keyboard.isDown("up", "w") then self.move:sset(0, -1) end
+			if love.keyboard.isDown("down", "s") then self.move:sset(0, 1) end
+			if love.keyboard.isDown("left", "a") then self.move:sset(-1, 0) end
+			if love.keyboard.isDown("right", "d") then self.move:sset(1, 0) end
+		end,
+		tick = function(self)
+			self.pos:vaddi(self.move)
+			self.move:sset(0)
 		end,
 		draw = function(self, display)
 			local x, y = self.pos:vmul(self.grid.cell_size):unpack()
-			grid:parse_template(self.template, function(ox, oy, z, glyph, colour)
+			self.grid:parse_template(self.template, function(ox, oy, z, glyph, colour)
 				display:add(x + ox, y + oy, z, glyph, colour)
 			end)
 		end,
 	})
+
+	table.insert(self.objects, snake( self, 12, 5, self.grid ))
+	
+	self.time_since_last_tick = 0
+end
+
+function state:tick()
+	for _, v in ipairs(self.objects) do
+		v:tick()
+	end
 end
 
 function state:update(dt)
-	--update each tick
+	-- tick in soft-realtime
+	self.time_since_last_tick = self.time_since_last_tick + dt
+	if self.time_since_last_tick > 0.33 then
+		self.time_since_last_tick = 0
+		self:tick()
+	end
+
+	--update everything
 	for _, v in ipairs(self.objects) do
-		v:update()
+		v:update(dt)
 	end
 end
 
