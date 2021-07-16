@@ -18,7 +18,8 @@ function gameobject:tick()
 end
 
 function gameobject:draw_template_at(display, pos, template, z_offset)
-	z_offset = z_offset or 0
+	local in_cell = self.grid:cell(pos.x, pos.y)
+	z_offset = z_offset or in_cell.elevation
 	local x, y = pos:vmul(self.grid.cell_size):unpack()
 	self.grid.parse_template(template, function(ox, oy, z, glyph, colour)
 		display:add(x + ox, y + oy, z + z_offset, glyph, colour)

@@ -62,7 +62,8 @@ return function(game_state)
 				grid:set(
 					x, y,
 					table.pick_random(template.water),
-					false
+					false,
+					-1
 				)
 			elseif type == 2 then
 				table.insert( game_state.spawns, vec2( x, y ) )

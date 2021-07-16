@@ -55,6 +55,7 @@ function cell:new(x, y)
 	self.pos = vec2(x, y) --could be implicit
 	self.template = false
 	self.solid = false
+	self.elevation = 0
 end
 
 function cell:draw(display)
@@ -64,7 +65,7 @@ function cell:draw(display)
 	local x = self.pos.x * cell_size.x
 	local y = self.pos.y * cell_size.y
 	parse_template(self.template, function(ox, oy, z, glyph, colour)
-		display:add(x + ox, y + oy, z, glyph, colour)
+		display:add(x + ox, y + oy, z + self.elevation, glyph, colour)
 	end)
 end
 
@@ -103,10 +104,11 @@ function grid:clear(x, y)
 	self:cell(x, y):clear()
 end
 
-function grid:set(x, y, template, solid)
+function grid:set(x, y, template, solid, elevation)
 	local cell = self:cell(x, y)
 	cell.template = template
 	cell.solid = solid
+	cell.elevation = elevation or 0
 end
 
 function grid:in_bounds(x, y)
