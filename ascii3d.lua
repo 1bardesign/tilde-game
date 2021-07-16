@@ -26,7 +26,7 @@ local function z_sort(a, b)
 	--z
 	if a[3] < b[3] then return true end
 	--y
-	if a[2] < b[2] then return true end
+	if a[3] == b[3] and a[2] < b[2] then return true end
 	return false
 end
 
