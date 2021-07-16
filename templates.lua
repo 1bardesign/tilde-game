@@ -354,6 +354,144 @@ local template = {
 			},
 		},
 	},
+	path = {
+		{
+			{
+				palette.fawn,
+				"///",
+				"///",
+				"///",
+			},
+		},
+		{
+			{
+				palette.fawn,
+				"// ",
+				"/ /",
+				"  /",
+			},
+		},
+	},
+	house = {
+		door = {
+			{
+				palette.brown,
+				"   ",
+				"‹‹‹",
+			},
+			{
+				palette.brown,
+				"   ",
+				"ÀÕÀ",
+			},
+			{
+				palette.brown,
+				"   ",
+				"∫ ∫",
+			},
+			{
+				palette.brown,
+				"   ",
+				"∫ ∫",
+			},
+		},
+		wall = {
+			{
+				{
+					palette.brown,
+					"   ",
+					"…Õª",
+				},
+				{
+					palette.brown,
+					"   ",
+					"π±Ã",
+				},
+				{
+					palette.brown,
+					"   ",
+					"∫±∫",
+				},
+				{
+					palette.brown,
+					"   ",
+					"‹‹‹",
+				},
+			},
+			{
+				{
+					palette.brown,
+					"   ",
+					"…Õª",
+				},
+				{
+					palette.brown,
+					"   ",
+					"π‹Ã",
+				},
+				{
+					palette.brown,
+					"   ",
+					"∫ ∫",
+				},
+				{
+					palette.brown,
+					"   ",
+					"‹‹‹",
+				},
+			},
+			{
+				{
+					palette.brown,
+					"   ",
+					"…Õª",
+				},
+				{
+					palette.brown,
+					"   ",
+					"π∫Ã",
+				},
+				{
+					palette.brown,
+					"   ",
+					"∫∫∫",
+				},
+				{
+					palette.brown,
+					"   ",
+					"‹‹‹",
+				},
+			},
+		},
+		roof = {
+			{
+				palette.yellow,
+				"±±±",
+				"±±±",
+				"±±±",
+			},
+			{
+				palette.yellow,
+				"   ",
+				"   ",
+				"   ",
+			},
+		},
+		roof_top = {
+			{
+				palette.yellow,
+				"",
+				"±±±",
+				"±±±",
+			},
+			{
+				palette.yellow,
+				"   ",
+				"   ",
+				"   ",
+			},
+		},
+	},
 	snake = {
 		head = {
 			{

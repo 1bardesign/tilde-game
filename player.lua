@@ -37,6 +37,7 @@ function player:update(dt)
 			self.is_lerping = false
 		end
 	end
+	self:tick()
 end
 
 function player:tick()

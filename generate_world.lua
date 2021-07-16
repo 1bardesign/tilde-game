@@ -5,9 +5,11 @@ local grid = require("grid")
 local exported_map = require("exported_map")
 
 return function(game_state)
-	local width = exported_map.layers[1].width;
-	local height = exported_map.layers[1].height;
-	assert( #exported_map.layers[1].data == width * height );
+	local tile_layer = exported_map.layers[1]
+	local tile_data = tile_layer.data
+	local width = tile_layer.width;
+	local height = tile_layer.height;
+	assert( #tile_data == width * height, "tilemap dimensions match data" );
 
 	game_state.grid = grid(width, height)
 	game_state.spawns = {}
@@ -16,7 +18,7 @@ return function(game_state)
 	-- parse data
 	for y=1, grid.size.y do
 		for x=1, grid.size.x do
-			local type = exported_map.layers[1].data[ x + ( y - 1 ) * grid.size.x ];
+			local type = tile_data[ x + ( y - 1 ) * grid.size.x ];
 
 			if type == 25 then
 				-- trees
@@ -49,7 +51,7 @@ return function(game_state)
 					)
 				end
 			elseif type == 220 then
-				local has_rock_above = y == 1 or exported_map.layers[1].data[ x + ( y - 2 ) * grid.size.x ] == 220;
+				local has_rock_above = y == 1 or tile_data[ x + ( y - 2 ) * grid.size.x ] == 220;
 
 				-- rocks
 				grid:set(
@@ -57,7 +59,7 @@ return function(game_state)
 					has_rock_above and table.pick_random(template.rock_full) or table.pick_random(template.rocks),
 					true
 				)
-			elseif type == 96 then
+			elseif type == 248 then
 				-- water
 				grid:set(
 					x, y,
@@ -65,10 +67,42 @@ return function(game_state)
 					false,
 					-1
 				)
+			elseif type == 48 then
+				-- path
+				grid:set(
+					x, y,
+					table.pick_random(template.path),
+					false
+				)
+			elseif type == 241 then
+				-- door
+				grid:set(
+					x, y,
+					template.house.door,
+					true
+				)
+			elseif type == 204 then
+				-- door
+				grid:set(
+					x, y,
+					table.pick_random(template.house.wall),
+					true
+				)
+			elseif type == 36 then
+				local has_roof_above = tile_data[ x + ( y - 2 ) * grid.size.x ] == type;
+
+				-- roof
+				grid:set(
+					x, y,
+					has_roof_above and template.house.roof or template.house.roof_top,
+					true
+				)
 			elseif type == 2 then
 				table.insert( game_state.spawns, vec2( x, y ) )
 			else
-				assert( type == 0, tostring( type ) )
+				if not ( type == 0 or type == 33) then
+					error("unknown tile type" .. tostring( type ))
+				end
 
 				-- empty / grass
 				if love.math.random() < 0.3 then
