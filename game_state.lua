@@ -60,7 +60,7 @@ end
 function state:update(dt)
 	-- tick in soft-realtime
 	self.time_since_last_tick = self.time_since_last_tick + dt
-	if self.time_since_last_tick > 0.33 then
+	if self.time_since_last_tick > 0.1 then
 		self.time_since_last_tick = 0
 		self:tick()
 	end
@@ -79,7 +79,7 @@ function state:draw()
 	)
 	love.graphics.scale(2)
 	love.graphics.translate(
-		self.player.pos:vmul(grid.cell_size):smuli(8):smuli(-1):unpack()
+		self.player.camera_pos:vmul(grid.cell_size):smuli(8):smuli(-1):unpack()
 	)
 	--draw world
 	love.graphics.clear(colour.unpack_argb(self.background_colour))
