@@ -3,6 +3,7 @@ local grid = require("grid")
 local palette = require("palette.pigment")
 local template = require("templates");
 local snake = require("ohno_a_snake");
+local sounds = require("sounds");
 
 local state = class()
 
@@ -56,8 +57,12 @@ function state:enter()
 			if love.keyboard.isDown("right", "d") then self.move:sset(1, 0) end
 		end,
 		tick = function(self)
-			self.pos:vaddi(self.move)
-			self.move:sset(0)
+			if self.move.x ~= 0 or self.move.y ~= 0 then
+				sounds.move:setVolume(0.2)
+				sounds.move:play()
+				self.pos:vaddi(self.move)
+				self.move:sset(0)
+			end
 		end,
 		draw = function(self, display)
 			local x, y = self.pos:vmul(self.grid.cell_size):unpack()
