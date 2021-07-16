@@ -5,6 +5,8 @@ local template = require("templates")
 
 local state = class()
 
+local use_shader = true
+
 --setup instance
 function state:new()
 	self.background_colour = palette.dark
@@ -68,7 +70,7 @@ function state:new()
 			//blur in distance
 			vec4 sharp = Texel(t, uv);
 			vec4 blur = Texel(blurred, uv);
-			float blur_amount = clamp(mix(0.2, 1.5, d), 0.0, 1.0);
+			float blur_amount = clamp(mix(-0.2, 1.2, d), 0.0, 1.0);
 			c *= mix(sharp, blur, blur_amount);
 			//apply vignette
 			float vignette_amount = max(0.0, mix(-0.2, 1.0, d));
@@ -174,33 +176,40 @@ function state:draw()
 	love.graphics.origin()
 	love.graphics.setBlendMode("alpha", "premultiplied")
 
-	--blur current frame
-	love.graphics.setCanvas(self.blurred)
-	love.graphics.setShader(self.blur_shader)
-	love.graphics.draw(self.canvas)
+	if use_shader then
+		--blur current frame
+		love.graphics.setCanvas(self.blurred)
+		love.graphics.setShader(self.blur_shader)
+		love.graphics.draw(self.canvas)
 
-	--effects
-	love.graphics.setCanvas(self.current_frame)
-	love.graphics.clear(colour.unpack_argb(self.background_colour))
-	love.graphics.setShader(self.shader)
-	local vigenette_speed = 1 / 20
-	local vignette_time = math.sin(love.timer.getTime() * math.tau * vigenette_speed) * 0.5 + 0.5
-	local distortion_speed = 1 / 13
-	local distortion_time = math.sin(love.timer.getTime() * math.tau * distortion_speed) * 0.5 + 0.5
-	self.shader:send("vignette_scale", math.lerp(0.6, 0.8, vignette_time))
-	self.shader:send("vignette_darken_scale", math.lerp(0.5, 0.25, vignette_time))
-	self.shader:send("distortion_scale", math.lerp(0.2, 0.8, distortion_time))
-	self.shader:send("time", love.timer.getTime())
-	self.shader:send("camera_pos", {cx, cy})
-	self.shader:send("camera_scale", 2)
-	self.shader:send("last_frame", self.last_frame)
-	self.shader:send("blurred", self.blurred)
-	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.draw(self.canvas)
+		--effects
+		love.graphics.setCanvas(self.current_frame)
+		love.graphics.clear(colour.unpack_argb(self.background_colour))
+		love.graphics.setShader(self.shader)
+		local vigenette_speed = 1 / 20
+		local vignette_time = math.sin(love.timer.getTime() * math.tau * vigenette_speed) * 0.5 + 0.5
+		local vignette_overall = 0.5
+		local distortion_speed = 1 / 13
+		local distortion_time = math.sin(love.timer.getTime() * math.tau * distortion_speed) * 0.5 + 0.5
+		self.shader:send("vignette_scale", math.lerp(0.6, 0.8, vignette_time) * vignette_overall)
+		self.shader:send("vignette_darken_scale", math.lerp(0.5, 0.25, vignette_time) * vignette_overall)
+		self.shader:send("distortion_scale", math.lerp(0.2, 0.8, distortion_time))
+		self.shader:send("time", love.timer.getTime())
+		self.shader:send("camera_pos", {cx, cy})
+		self.shader:send("camera_scale", 2)
+		self.shader:send("last_frame", self.last_frame)
+		self.shader:send("blurred", self.blurred)
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.draw(self.canvas)
+
+		love.graphics.setCanvas()
+		love.graphics.draw(self.current_frame)
+		self.current_frame, self.last_frame = self.last_frame, self.current_frame
+	else
+		love.graphics.setCanvas()
+		love.graphics.draw(self.canvas)
+	end
 	love.graphics.pop()
-
-	love.graphics.draw(self.current_frame)
-	self.current_frame, self.last_frame = self.last_frame, self.current_frame
 end
 
 function state:keypressed(k)

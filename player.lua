@@ -73,7 +73,7 @@ function player:keypressed(k)
 end
 
 function player:draw(display)
-	self:draw_template_at(display, self.pos, self.template)
+	self:draw_template_at(display, self.pos:sadd(0, 0.1), self.template)
 end
 
 return player
