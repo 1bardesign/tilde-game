@@ -12,8 +12,9 @@ function state:new()
 	self.last_frame = love.graphics.newCanvas(love.graphics.getWidth(), love.graphics.getHeight())
 	self.canvas = love.graphics.newCanvas(love.graphics.getWidth(), love.graphics.getHeight())
 	self.shader = love.graphics.newShader([[
-		uniform float vignette_amount;
+		uniform float vignette_scale;
 		uniform vec4 vignette_colour;
+		uniform float distortion_scale;
 		uniform float time;
 		uniform vec2 res;
 		uniform Image distortion_tex;
@@ -30,6 +31,7 @@ function state:new()
 			float distortion_min = -0.1;
 			float distortion_max = 1.5;
 			float distortion_amount = clamp(mix(distortion_min, distortion_max, d), 0.0, 1.0);
+			distortion_amount = distortion_amount * distortion_scale;
 			float distortion_domainwarp = 35.0;
 			float distortion_distance = 5.0;
 			float distortion_res_scale = 0.2;
@@ -40,18 +42,19 @@ function state:new()
 				distortion = (Texel(distortion_tex, distortion_uv).rg - vec2(0.5)) * 2.0;
 				distortion_uv = distortion_uv + distortion.yx / distortion_res * distortion_domainwarp;
 			}
-			//sample
-			vec2 uv_distortion_offset = distortion / res * distortion_amount;
-			vec4 undistorted = Texel(t, uv + uv_distortion_offset * distortion_distance);
-			vec4 distorted = Texel(t, uv);
-			c *= mix(undistorted, distorted, 0.2);
+			c *= Texel(t, uv);
 			//apply vignette
-			c.rgb = mix(c.rgb, vignette_colour.rgb, d * vignette_amount);
+			c.rgb = mix(c.rgb, vignette_colour.rgb, d * vignette_scale);
 			//lerp last frame
 			vec2 zoom_uv = uv;
+			//sample distorted
+			vec2 uv_distortion_offset = distortion / res * distortion_amount;
 			zoom_uv -= uv_distortion_offset.yx * distortion_distance;
-			zoom_uv = (zoom_uv - vec2(0.5)) * 0.975 + vec2(0.5);
-			c = mix(c, Texel(last_frame, zoom_uv), mix(0.25, 0.9, d));
+			//and scaled
+			zoom_uv = (zoom_uv - vec2(0.5)) * 0.99 + vec2(0.5);
+
+			float old_frame_amount = clamp(mix(0.1, 0.9, d), 0.0, 1.0);
+			c = mix(c, Texel(last_frame, zoom_uv), old_frame_amount);
 			return c;
 		}
 	]])
@@ -140,7 +143,8 @@ function state:draw()
 	--effects
 	love.graphics.setCanvas(self.current_frame)
 	love.graphics.setShader(self.shader)
-	self.shader:send("vignette_amount", math.lerp(0.6, 0.8, math.sin(love.timer.getTime()) * 0.5 + 0.5))
+	self.shader:send("vignette_scale", math.lerp(0.6, 0.8, math.sin(love.timer.getTime()) * 0.5 + 0.5))
+	self.shader:send("distortion_scale", math.lerp(0.2, 1.0, math.sin(love.timer.getTime()) * 0.5 + 0.5))
 	self.shader:send("time", love.timer.getTime())
 	self.shader:send("camera_pos", {cx, cy})
 	self.shader:send("camera_scale", 2)
