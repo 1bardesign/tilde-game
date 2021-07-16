@@ -8,4 +8,5 @@ return {
 	dark = 0xff342121,
 	brown = 0xff7b4136,
 	yellow = 0xffc59846,
+	blue = 0xff173c58,
 }
