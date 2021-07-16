@@ -129,7 +129,7 @@ function state:draw()
 	love.graphics.setCanvas(self.canvas)
 	love.graphics.setShader()
 	love.graphics.clear(colour.unpack_argb(self.background_colour))
-	self.grid:draw(self.display)
+	self.grid:draw(self.display, self.player.camera_pos)
 	--draw objects
 	for _, v in ipairs(self.objects) do
 		v:draw(self.display)
