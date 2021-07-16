@@ -1,9 +1,7 @@
 local grid = require("grid")
 
 local palette = require("palette.pigment")
-local template = require("templates");
-local snake = require("ohno_a_snake");
-local sounds = require("sounds");
+local template = require("templates")
 
 local state = class()
 
@@ -23,29 +21,12 @@ function state:enter()
 
 	self.grid = grid(width, height)
 
-	-- TODO: Move world creation to separate file
-	for y = 1, self.grid.size.y do
-		for x = 1, self.grid.size.x do
-			local t = template.grass
-			local r = love.math.random();
-			if r < 0.1 then
-				t = template.flowers
-			elseif r < 0.2 then
-				t = template.tree
-			elseif r < 0.22 then
-				t = template.rocks
-			end
-			self.grid:set_template(
-				x, y,
-				table.pick_random(t)
-			)
-		end
-	end
+	require("generate_world")(self)
 
 	self.player = require("player")(self, vec2(10, 5))
 	table.insert(self.objects, self.player)
 
-	self.snake = snake( self, 12, 5, self.grid )
+	self.snake = require("ohno_a_snake")( self, 12, 5, self.grid )
 	table.insert(self.objects, self.snake)
 	
 	self.time_since_last_tick = 0
