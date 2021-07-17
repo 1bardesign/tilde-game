@@ -382,14 +382,14 @@ function state:draw()
 		self.shader:send("noise_offset", {love.math.random(), love.math.random()})
 		love.graphics.setColor(1, 1, 1, 1)
 		love.graphics.draw(self.canvas)
-
-		love.graphics.setCanvas()
-		love.graphics.draw(self.current_frame)
-		self.current_frame, self.last_frame = self.last_frame, self.current_frame
 	else
-		love.graphics.setCanvas()
+		love.graphics.setCanvas(self.current_frame)
 		love.graphics.draw(self.canvas)
 	end
+	love.graphics.setCanvas()
+	love.graphics.setShader()
+	love.graphics.draw(self.current_frame)
+	self.current_frame, self.last_frame = self.last_frame, self.current_frame
 	love.graphics.pop()
 end
 
