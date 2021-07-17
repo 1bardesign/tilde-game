@@ -160,6 +160,11 @@ function state:enter()
 				local frog = require("frog")( self, pos.x, pos.y )
 				table.insert(self.objects, frog)
 			end
+		elseif k == "bird" then
+			for _, pos in ipairs( poses ) do
+				local bird = require("bird")( self, pos.x, pos.y )
+				table.insert(self.objects, bird)
+			end
 		end
 		-- etc
 		-- local snake_spawn = tablex.take_random( self.spawns );

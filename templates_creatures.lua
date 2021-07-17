@@ -8,6 +8,24 @@ local template = {
 		glyph_anim_head = '”',
 		glyph_anim_legs = 'ê',
 	},
+	bird = {
+		frame_1 = {
+			{
+				palette.yellow,
+				"\\/ ",
+				"   ",
+				"   ",
+			},
+		},
+		frame_2 = {
+			{
+				palette.yellow,
+				"   ",
+				"/\\ ",
+				"   ",
+			},
+		}
+	},
 	snake = {
 		head = {
 			{
