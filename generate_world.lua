@@ -100,6 +100,10 @@ return function(game_state)
 					true
 				)
 			elseif type == 2 then
+				-- game_state.player_spawn = vec2( x, y )
+			elseif type == 3 then
+				-- DEBUG position
+				-- TODO: REMOVE THIS
 				game_state.player_spawn = vec2( x, y )
 			elseif type == 103 then
 				game_state.spawns["frog"] = game_state.spawns["frog"] or {}
@@ -127,9 +131,9 @@ return function(game_state)
 	local regions = functional.find_match( exported_map.layers, function( layer ) return layer.name == "Regions" end ).objects
 	for _, region in ipairs( regions ) do
 		local tl = vec2( region.x / exported_map.tilewidth, region.y / exported_map.tileheight )
-		local dim = vec2( region.width / exported_map.tilewidth, region.height / exported_map.tileheight )
+		local dim = vec2( 1 + region.width / exported_map.tilewidth, 1 + region.height / exported_map.tileheight )
 		local hs = dim:smul(0.5,0.5)
 		local center = tl:vadd( hs )
-		game_state.regions[ region.name ] = { center, hs }
+		game_state.regions[ region.id ] = { region.name, center, hs }
 	end
 end

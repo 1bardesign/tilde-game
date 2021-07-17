@@ -143,12 +143,15 @@ end
 function state:enter()
 	--setup anything to be done on state enter here (ie reset everything)
 	self.display = require("ascii3d")()
+	self.ui_display = require("ascii3d")()
 	self.objects = {}
-	
+	self.message_stack = {}
+
 	require("generate_world")(self) -- populates the structures below
 	assert( self.grid )
 	assert( self.player_spawn )
 	assert( self.spawns )
+	assert( self.regions )
 
 	local player_spawn = self.player_spawn;
 	self.player = require("player")(self, player_spawn )
@@ -202,8 +205,11 @@ end
 function state:update_player_region( pos )
 	-- Detect overlapping regions
 	local regions = set()
-	for name, aabb in pairs( self.regions ) do
-		if intersect.aabb_point_overlap( aabb[1], aabb[2], pos ) then
+	for _, region in pairs( self.regions ) do
+		name = region[1]
+		center = region[2]
+		hs = region[3]
+		if intersect.aabb_point_overlap( center, hs, pos ) then
 			regions:add( name )
 		end
 	end
@@ -214,20 +220,52 @@ function state:update_player_region( pos )
 	local old_regions = self.player_regions:copy()
 	old_regions:subtract_set( regions )
 
+	local add_message = function( msg )
+		for i=1,#self.message_stack do
+			local priority = msg.priority or 0
+			local p = self.message_stack[i].priority or 0
+			if p > priority then
+				for j=i+1,#self.message_stack+1 do
+					self.message_stack[j] = self.message_stack[j-1]
+				end
+				self.message_stack[i] = msg
+				return
+			end
+		end
+
+		-- Else put on top
+		table.insert( self.message_stack, msg )
+	end
+
 	for _, region in ipairs( new_regions:values_readonly() ) do
 		if region == "Start" then
 			if not self.player_seen:has( region ) then
-				print("Start message")
+				add_message( { text = "A Forest Walk", region_bound = region } )
 			end
 		elseif region == "WrongWay" then
-			print("Wrong way")
+			add_message( { text = "Wrong Way", region_bound = region } )
 		elseif region == "Fork" then
-			print("A fork in the path")
+			add_message( { text = "A Fork In The Path", region_bound = region } )
+		elseif region == "Entrance" then
+			add_message( { text = "Nobody's Home", region_bound = region, priority = 1 } )
+		elseif region == "House" then
+			add_message( { text = "A House In The Forest", region_bound = region } )
+		elseif region == "Dark" then
+			-- TODO: Trigger dark / for instance
+			-- use_shader = true
 		end
 	end
 
+
 	for _, region in ipairs( old_regions:values_readonly() ) do
-		-- TODO: Any exit region actions
+		-- Generic region exit actions
+		self.message_stack = functional.remove_if( self.message_stack, function( msg ) return msg.region_bound == region; end )
+		
+		-- Specific region exit actions
+		-- TODO: When exit "Start" for first time zoom camera out a little
+		if region == "Dark" then
+			-- use_shader = false
+		end
 	end
  
 	self.player_seen:add_set( regions )
@@ -255,6 +293,18 @@ function state:draw()
 	end
 	--display
 	self.display:draw()
+
+	-- draw message
+	local msg = self.message_stack[#self.message_stack]
+	if msg then
+		local x = self.player.camera_pos.x - #msg.text / self.grid.cell_size.x / 2
+		local y = self.player.camera_pos.y + 6
+		for i=1,#msg.text do
+			local char = msg.text:sub(i)
+			self.ui_display:add( i + x*self.grid.cell_size.x, y*self.grid.cell_size.y, 0, char, palette.white)
+		end
+	end
+	self.ui_display:draw()
 
 	--screenspace stuff
 	love.graphics.origin()
