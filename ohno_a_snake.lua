@@ -117,7 +117,7 @@ function snake:tick()
 			return d:dot(player_direction) + love.math.random()
 		end)
 		if chosen_dir then
-			sounds.serpent_move:play()
+			sounds.play( sounds.sound.serpent_move )
 
 			self.dir = chosen_dir
 
@@ -138,7 +138,7 @@ function snake:tick()
 	else
 		-- Growl 
 		self.choice_delay = 5;
-		sounds.serpent_growl:play()
+		sounds.play( sounds.serpent_growl )
 	end
 end
 

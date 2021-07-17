@@ -58,8 +58,7 @@ function player:tick()
 			self.tile_lerp = 0
 			self.is_lerping = true
 		end
-		sounds.move:setVolume(0.2)
-		sounds.move:play()
+		sounds.play( sounds.sound.move, 0.2 )
 		--todo: blocked sound
 	end
 end

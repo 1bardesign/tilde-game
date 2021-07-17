@@ -99,7 +99,7 @@ function frog:tick()
 		if chosen_dir then
 			local new_pos = self.next_pos:add( nil, chosen_dir );
 			if can_enter_cell( self.game_state.grid, new_pos.p.x, new_pos.p.y) then
-				-- sounds.serpent_move:play()
+				sounds.play_positional( sounds.sound.frog_jump, 0.5, self.game_state, new_pos.p )
 				self.dir = chosen_dir
 				self.prev_pos = self.next_pos
 				self.next_pos = new_pos
