@@ -138,6 +138,13 @@ function state:new()
 		self.shader:send("vignette_colour", {colour.unpack_argb(palette.dark)})
 		self.shader:send("distortion_flow", {3.3, 2.3})
 	end
+
+	-- synthesize rain noise
+	local denver = require("denver")
+	self.rain_noise = denver.get({waveform='pinknoise', length=6})
+	self.rain_noise:setLooping( true )
+	self.rain_noise:setVolume( 0 )
+	love.audio.play(self.rain_noise)
 end
 
 function state:enter()
@@ -146,6 +153,9 @@ function state:enter()
 	self.ui_display = require("ascii3d")()
 	self.objects = {}
 	self.message_stack = {}
+	self.is_raining = false
+	self.rain_timer = 0
+	self.rain_gain = 0
 
 	require("generate_world")(self) -- populates the structures below
 	assert( self.grid )
@@ -200,6 +210,19 @@ function state:update(dt)
 	for _, v in ipairs(self.objects) do
 		v:update(dt)
 	end
+
+	--update effects etc
+	if self.is_raining then
+		self.rain_timer = self.rain_timer + dt
+		if self.rain_gain < 1 then
+			self.rain_gain = math.min( 1, self.rain_gain + dt )
+		end
+	elseif self.rain_gain > 0 then
+		self.rain_gain = math.max( 0, self.rain_gain - dt )
+	end
+
+	self.rain_noise:setVolume( 0.25 * self.rain_gain )
+	
 end
 
 function state:update_player_region( pos )
@@ -250,6 +273,9 @@ function state:update_player_region( pos )
 			add_message( { text = "Nobody's Home", region_bound = region, priority = 1 } )
 		elseif region == "House" then
 			add_message( { text = "A House In The Forest", region_bound = region } )
+		elseif region == "Rain" then
+			self.is_raining = true
+			use_shader = true
 		elseif region == "Dark" then
 			-- TODO: Trigger dark / for instance
 			-- use_shader = true
@@ -263,7 +289,10 @@ function state:update_player_region( pos )
 		
 		-- Specific region exit actions
 		-- TODO: When exit "Start" for first time zoom camera out a little
-		if region == "Dark" then
+		if region == "Rain" then
+			self.is_raining = false
+			use_shader = false
+		elseif region == "Dark" then
 			-- use_shader = false
 		end
 	end
@@ -291,6 +320,23 @@ function state:draw()
 	for _, v in ipairs(self.objects) do
 		v:draw(self.display)
 	end
+
+	-- draw dynamic effects
+	if self.is_raining then
+		-- TODO: doesnt need to be on display layer
+		local x = math.floor( self.player.camera_pos.x )
+		local y = math.floor( self.player.camera_pos.y ) + 2
+		local dt = ( self.rain_timer % 0.3 ) / 0.3
+		for dx=-30,30,1 do
+			for dy=-20,20,1 do
+				local px = ( x + dx )*self.grid.cell_size.x + dt * 3
+				local py = ( y + dy )*self.grid.cell_size.y + dt * 9
+				self.display:add( px, py, 10, '|', palette.blue)
+			end
+		end
+	end
+
+
 	--display
 	self.display:draw()
 
