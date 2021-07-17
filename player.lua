@@ -48,7 +48,7 @@ function player:update(dt)
 			self.step_sound_timer = 0.1
 
 			local cell = self.grid:cell( self.tile_pos.x, self.tile_pos.y );
-			local in_water = cell.template == template.water[1]; -- gross
+			local in_water = cell.type == "water"
 
 			local sound = in_water and sounds.sound.move_water or sounds.sound.move;
 
