@@ -153,7 +153,7 @@ function state:enter()
 	local player_spawn = self.player_spawn;
 	self.player = require("player")(self, player_spawn )
 	table.insert(self.objects, self.player)
-
+	
 	for k,poses in pairs( self.spawns ) do
 		if k == "frog" then
 			for _, pos in ipairs( poses ) do
@@ -172,6 +172,10 @@ function state:enter()
 		-- table.insert(self.objects, self.snake)
 	end
 	
+	self.player_regions = set()
+	self.player_seen = set()
+
+	self:update_player_region( player_spawn )
 	self.time_since_last_tick = 0
 end
 
@@ -193,6 +197,41 @@ function state:update(dt)
 	for _, v in ipairs(self.objects) do
 		v:update(dt)
 	end
+end
+
+function state:update_player_region( pos )
+	-- Detect overlapping regions
+	local regions = set()
+	for name, aabb in pairs( self.regions ) do
+		if intersect.aabb_point_overlap( aabb[1], aabb[2], pos ) then
+			regions:add( name )
+		end
+	end
+
+	local new_regions = regions:copy()
+	new_regions:subtract_set( self.player_regions )
+
+	local old_regions = self.player_regions:copy()
+	old_regions:subtract_set( regions )
+
+	for _, region in ipairs( new_regions:values_readonly() ) do
+		if region == "Start" then
+			if not self.player_seen:has( region ) then
+				print("Start message")
+			end
+		elseif region == "WrongWay" then
+			print("Wrong way")
+		elseif region == "Fork" then
+			print("A fork in the path")
+		end
+	end
+
+	for _, region in ipairs( old_regions:values_readonly() ) do
+		-- TODO: Any exit region actions
+	end
+ 
+	self.player_seen:add_set( regions )
+	self.player_regions = regions
 end
 
 function state:draw()

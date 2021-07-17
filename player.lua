@@ -57,6 +57,8 @@ function player:tick()
 	
 			self.tile_lerp = 0
 			self.is_lerping = true
+
+			self.game_state:update_player_region( target_pos )
 		end
 		sounds.play( sounds.sound.move, 0.2 )
 		--todo: blocked sound

@@ -5,7 +5,8 @@ local grid = require("grid")
 local exported_map = require("exported_map")
 
 return function(game_state)
-	local tile_layer = exported_map.layers[1]
+	local tile_layer = functional.find_match( exported_map.layers, function( layer ) return layer.name == "Tiles" end );
+
 	local tile_data = tile_layer.data
 	local width = tile_layer.width;
 	local height = tile_layer.height;
@@ -14,9 +15,9 @@ return function(game_state)
 	game_state.grid = grid(width, height)
 	game_state.player_spawn = nil;
 	game_state.spawns = {};
+	game_state.regions = {};
 	
 	local grid = game_state.grid;
-	-- parse data
 	for y=1, grid.size.y do
 		for x=1, grid.size.x do
 			local type = tile_data[ x + ( y - 1 ) * grid.size.x ];
@@ -121,5 +122,14 @@ return function(game_state)
 				end
 			end
 		end
+	end
+
+	local regions = functional.find_match( exported_map.layers, function( layer ) return layer.name == "Regions" end ).objects
+	for _, region in ipairs( regions ) do
+		local tl = vec2( region.x / exported_map.tilewidth, region.y / exported_map.tileheight )
+		local dim = vec2( region.width / exported_map.tilewidth, region.height / exported_map.tileheight )
+		local hs = dim:smul(0.5,0.5)
+		local center = tl:vadd( hs )
+		game_state.regions[ region.name ] = { center, hs }
 	end
 end
