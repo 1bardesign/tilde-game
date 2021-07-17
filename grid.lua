@@ -55,6 +55,7 @@ function cell:new(x, y)
 	self.pos = vec2(x, y) --could be implicit
 	self.template = false
 	self.solid = false
+	self.type = "empty"
 	self.elevation = 0
 end
 
@@ -104,10 +105,11 @@ function grid:clear(x, y)
 	self:cell(x, y):clear()
 end
 
-function grid:set(x, y, template, solid, elevation)
+function grid:set(x, y, template, solid, type, elevation)
 	local cell = self:cell(x, y)
 	cell.template = template
 	cell.solid = solid
+	cell.type = type or (solid and "wall" or "empty")
 	cell.elevation = elevation or 0
 end
 

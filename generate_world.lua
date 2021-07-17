@@ -27,21 +27,24 @@ return function(game_state)
 				grid:set(
 					x, y,
 					table.pick_random(template.tree),
-					true
+					true,
+					"tree"
 				)
 			elseif type == 44 then
 				-- an empty collision space
 				grid:set(
 					x, y,
 					nil,
-					true
+					true,
+					"tree"
 				)
 			elseif type == 8 then
 				-- mushrooms
 				grid:set(
 					x, y,
 					table.pick_random(template.mushrooms),
-					false
+					false,
+					"mushroom"
 				)
 			elseif type == 47 then
 				-- flowers
@@ -49,7 +52,8 @@ return function(game_state)
 					grid:set(
 						x, y,
 						table.pick_random(template.flowers),
-						false
+						false,
+						"flower"
 					)
 				end
 			elseif type == 220 then
@@ -59,7 +63,8 @@ return function(game_state)
 				grid:set(
 					x, y,
 					has_rock_above and table.pick_random(template.rock_full) or table.pick_random(template.rocks),
-					true
+					true,
+					"rock"
 				)
 			elseif type == 248 then
 				-- water
@@ -67,6 +72,7 @@ return function(game_state)
 					x, y,
 					table.pick_random(template.water),
 					false,
+					"water",
 					-1
 				)
 			elseif type == 48 then
@@ -74,21 +80,24 @@ return function(game_state)
 				grid:set(
 					x, y,
 					table.pick_random(template.path),
-					false
+					false,
+					"path"
 				)
 			elseif type == 241 then
 				-- door
 				grid:set(
 					x, y,
 					template.house.door,
-					true
+					true,
+					"building"
 				)
 			elseif type == 204 then
 				-- door
 				grid:set(
 					x, y,
 					table.pick_random(template.house.wall),
-					true
+					true,
+					"building"
 				)
 			elseif type == 36 then
 				local has_roof_above = tile_data[ x + ( y - 2 ) * grid.size.x ] == type;
@@ -97,11 +106,10 @@ return function(game_state)
 				grid:set(
 					x, y,
 					has_roof_above and template.house.roof or template.house.roof_top,
-					true
+					true,
+					"building"
 				)
-			elseif type == 2 then
-				-- game_state.player_spawn = vec2( x, y )
-			elseif type == 3 then
+			elseif type == 3 or type == 2 then
 				-- DEBUG position
 				-- TODO: REMOVE THIS
 				game_state.player_spawn = vec2( x, y )
