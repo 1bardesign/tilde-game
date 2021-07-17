@@ -118,9 +118,17 @@ return function(game_state)
 
 				-- empty / grass
 				if love.math.random() < 0.3 then
+					local t_set;
+					if love.math.random() < 0.3 then
+						t_set = template.grass.misc
+					elseif ( x + y ) % 2 == 0 then
+						t_set = template.grass.check_1
+					else
+						t_set = template.grass.check_2
+					end
 					grid:set(
 						x, y,
-						table.pick_random(template.grass),
+						table.pick_random(t_set),
 						false
 					)
 				end

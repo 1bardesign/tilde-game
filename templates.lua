@@ -245,38 +245,132 @@ local template = {
 		},
 	},
 	grass = {
-		{
+		check_1 = {
 			{
-				palette.fawn,
-				",  ",
-				"   ",
-				"   ",
+				{
+					palette.fawn,
+					", ,",
+					" , ",
+					", ,",
+				},
+			},
+			{
+				{
+					palette.fawn,
+					", ,",
+					" , ",
+					", ,",
+				},
+			},
+			{
+				{
+					palette.fawn,
+					", ,",
+					" , ",
+					", ,",
+				},
+			},
+			{
+				{
+					palette.fawn,
+					", ,",
+					",, ",
+					",,,",
+				},
+			},
+			{
+				{
+					palette.fawn,
+					",,,",
+					",,,",
+					",,,",
+				},
+			},
+			{
+				{
+					palette.fawn,
+					", ,",
+					"   ",
+					", ,",
+				},
 			},
 		},
-		{
+		check_2 = {
 			{
-				palette.fawn,
-				"   ",
-				",, ",
-				"   ",
+				{
+					palette.fawn,
+					" , ",
+					", ,",
+					" , ",
+				},
+			},
+			{
+				{
+					palette.fawn,
+					" , ",
+					", ,",
+					" , ",
+				},
+			},
+			{
+				{
+					palette.fawn,
+					" , ",
+					", ,",
+					" , ",
+				},
+			},
+			{
+				{
+					palette.fawn,
+					",,,",
+					",,,",
+					",,,",
+				},
+			},
+			{
+				{
+					palette.fawn,
+					"   ",
+					", ,",
+					" , ",
+				},
 			},
 		},
-		{
+		misc = {
 			{
-				palette.fawn,
-				"   ",
-				"   ",
-				"  ,",
+				{
+					palette.fawn,
+					"   ",
+					"   ",
+					"  ,",
+				},
 			},
-		},
-		{
 			{
-				palette.fawn,
-				" ,,",
-				" ,,",
-				"   ",
+				{
+					palette.fawn,
+					"   ",
+					"   ",
+					"  v",
+				},
 			},
-		},
+			{
+				{
+					palette.fawn,
+					"   ",
+					",  ",
+					"   ",
+				},
+			},
+			{
+				{
+					palette.fawn,
+					"  ,",
+					" , ",
+					"   ",
+				},
+			},
+		}
 	},	
 	rock_full = {
 		{
@@ -357,18 +451,18 @@ local template = {
 	path = {
 		{
 			{
-				palette.fawn,
-				"///",
-				"///",
-				"///",
+				palette.dark_lighter,
+				"°°°",
+				"°°°",
+				"°°°",
 			},
 		},
 		{
 			{
-				palette.fawn,
-				"// ",
-				"/ /",
-				"  /",
+				palette.dark_lighter,
+				"°° ",
+				"° °",
+				"  °",
 			},
 		},
 	},

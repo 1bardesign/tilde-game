@@ -7,6 +7,7 @@ return {
 	fawn = 0xff4a443c,
 	dark = 0xff342121,
 	brown = 0xff7b4136,
+	dark_lighter = 0xff443131,
 	yellow = 0xffc59846,
 	blue = 0xff173c58,
 }
