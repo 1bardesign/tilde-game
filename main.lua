@@ -47,7 +47,7 @@ function love.draw()
 	end
 end
 
-function love.keypressed(k)
+function love.keypressed(k,_,isrepeat)
 	if love.keyboard.isDown("lctrl", "rctrl") then
 		if k == "q" then
 			love.event.quit()
@@ -56,5 +56,11 @@ function love.keypressed(k)
 		end
 	end
 
-	game_state:_call("keypressed", k)
+	if not isrepeat then
+		game_state:_call("keypressed", k)
+	end
+end
+
+function love.keyreleased(k)
+	game_state:_call("keyreleased", k)
 end

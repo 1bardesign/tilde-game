@@ -1,6 +1,7 @@
 return {
 	sound = {
-		move = love.audio.newSource( "wav/player_jump.wav", "static" ),
+		move = love.audio.newSource( "wav/move2.wav", "static" ),
+		move_water = love.audio.newSource( "wav/move_water.wav", "static" ),
 		serpent_move = love.audio.newSource( "wav/move1.wav", "static" ),
 		serpent_growl = love.audio.newSource( "wav/serpent_growl.wav", "static" ),
 		frog_jump = love.audio.newSource( "wav/frog_jump.wav", "static" ),

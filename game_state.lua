@@ -394,10 +394,11 @@ function state:draw()
 end
 
 function state:keypressed(k)
-	--hand off to objects
-	for _, v in ipairs(self.objects) do
-		v:keypressed(k)
-	end
+	self.player:keypressed(k)
+end
+
+function state:keyreleased(k)
+	self.player:keyreleased(k)
 end
 
 return state
