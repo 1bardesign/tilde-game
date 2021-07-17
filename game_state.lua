@@ -5,7 +5,7 @@ local template = require("templates")
 
 local state = class()
 
-local use_shader = true
+local use_shader = false
 
 --setup instance
 function state:new()
@@ -147,15 +147,25 @@ function state:enter()
 	
 	require("generate_world")(self) -- populates the structures below
 	assert( self.grid )
+	assert( self.player_spawn )
 	assert( self.spawns )
 
-	local player_spawn = tablex.take_random( self.spawns );
+	local player_spawn = self.player_spawn;
 	self.player = require("player")(self, player_spawn )
 	table.insert(self.objects, self.player)
 
-	local snake_spawn = tablex.take_random( self.spawns );
-	self.snake = require("ohno_a_snake")( self, snake_spawn.x, snake_spawn.y, self.grid )
-	table.insert(self.objects, self.snake)
+	for k,poses in pairs( self.spawns ) do
+		if k == "frog" then
+			for _, pos in ipairs( poses ) do
+				local frog = require("frog")( self, pos.x, pos.y )
+				table.insert(self.objects, frog)
+			end
+		end
+		-- etc
+		-- local snake_spawn = tablex.take_random( self.spawns );
+		-- self.snake = require("ohno_a_snake")( self, snake_spawn.x, snake_spawn.y )
+		-- table.insert(self.objects, self.snake)
+	end
 	
 	self.time_since_last_tick = 0
 end

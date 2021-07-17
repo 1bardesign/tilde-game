@@ -12,7 +12,8 @@ return function(game_state)
 	assert( #tile_data == width * height, "tilemap dimensions match data" );
 
 	game_state.grid = grid(width, height)
-	game_state.spawns = {}
+	game_state.player_spawn = nil;
+	game_state.spawns = {};
 	
 	local grid = game_state.grid;
 	-- parse data
@@ -98,7 +99,10 @@ return function(game_state)
 					true
 				)
 			elseif type == 2 then
-				table.insert( game_state.spawns, vec2( x, y ) )
+				game_state.player_spawn = vec2( x, y )
+			elseif type == 103 then
+				game_state.spawns["frog"] = game_state.spawns["frog"] or {}
+				table.insert( game_state.spawns["frog"], vec2( x, y ) )
 			else
 				if not ( type == 0 or type == 33) then
 					error("unknown tile type" .. tostring( type ))

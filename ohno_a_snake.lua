@@ -1,6 +1,6 @@
 -- A snake
 local palette = require("palette.pigment")
-local template = require("templates")
+local template = require("templates_creatures")
 local sounds = require("sounds")
 
 local snake = class({
