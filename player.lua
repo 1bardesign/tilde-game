@@ -66,6 +66,27 @@ function player:update(dt)
 	self.camera_pos:lerpi(self.pos, dt * 5)
 end
 
+
+local function find_target_pos( grid, pos, dir )
+	local target_pos = pos:vadd( dir )
+	if not grid:solid_at(target_pos:unpack()) then
+		return target_pos
+	end
+
+	-- Try move diagonally (through small gaps)
+	local test_pos1 = dir.y == 0 and pos:vadd( dir ):vadd( vec2( 0, -1 ) ) or pos:vadd( dir ):vadd( vec2( -1, 0 ) )
+	local test_pos2 = dir.y == 0 and pos:vadd( dir ):vadd( vec2( 0, 1 ) ) or pos:vadd( dir ):vadd( vec2( 1, 0 ) )
+
+	if not grid:solid_at(test_pos1:unpack()) then
+		return test_pos1
+	end
+
+	if not grid:solid_at(test_pos2:unpack()) then
+		return test_pos2
+	end
+end
+
+
 function player:tick()
 	self.ticker = self.ticker - 1
 	if self.ticker > 0 then
@@ -79,8 +100,8 @@ function player:tick()
 
 	if #self.move_queue > 0 then
 		local move = table.shift(self.move_queue)
-		local target_pos = self.tile_pos:vadd(move)
-		if not self.grid:solid_at(target_pos:unpack()) then
+		local target_pos = find_target_pos( self.grid, self.tile_pos, move )
+		if target_pos then
 			self.tile_pos:vset(target_pos)
 			self.tile_pos_prev = self.tile_pos_wander:copy()
 			local wander_rad = 0 --  0.5 / 3
