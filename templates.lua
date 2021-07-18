@@ -610,6 +610,24 @@ local template = {
 			},
 		},
 	},
+	bridge = {
+		vertical = {
+			{
+				palette.brown,
+				"º±º",
+				"º±º",
+				"º±º",
+			},
+		},
+		horizontal = {
+			{
+				palette.brown,
+				"ÍÍÍ",
+				"±±±",
+				"ÍËÍ",
+			},
+		},
+	},
 	house = {
 		door = {
 			{

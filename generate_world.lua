@@ -95,7 +95,7 @@ return function(game_state)
 				grid:set(
 					x, y,
 					table.pick_random(template.water),
-					false,
+					true,
 					"water",
 					-1
 				)
@@ -107,6 +107,14 @@ return function(game_state)
 					false,
 					"path"
 				)
+			elseif type == 206 or type == 187 then
+				-- bridge
+				grid:set(
+					x, y,
+					template.bridge[type == 187 and "vertical" or "horizontal"],
+					false,
+					"building"
+				)
 			elseif type == 241 then
 				-- door
 				grid:set(
@@ -116,7 +124,7 @@ return function(game_state)
 					"building"
 				)
 			elseif type == 204 then
-				-- door
+				-- wall
 				grid:set(
 					x, y,
 					table.pick_random(template.house.wall),
