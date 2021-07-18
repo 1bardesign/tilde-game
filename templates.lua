@@ -148,6 +148,20 @@ local template = {
 		},
 		{
 			{
+				palette.green,
+				",",
+			},
+			{
+				palette.green,
+				"ù",
+			},
+			{
+				palette.green,
+				"ù",
+			},
+		},
+		{
+			{
 				palette.yellow,
 				"*",
 			},
@@ -157,6 +171,10 @@ local template = {
 			},
 		},
 		{
+			{
+				palette.green,
+				",",
+			},
 			{
 				palette.green,
 				"ù",
