@@ -54,6 +54,14 @@ return function(game_state)
 					false,
 					"mushroom"
 				)
+			elseif type == 9 then
+				-- boulders
+				grid:set(
+					x, y,
+					table.pick_random(template.boulders),
+					true,
+					"rock"
+				)
 			elseif type == 47 then
 				-- flowers
 				if love.math.random() < 0.5 then

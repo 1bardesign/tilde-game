@@ -524,6 +524,32 @@ local template = {
 			},
 		},
 	},
+	boulders = {
+		{
+			{
+				palette.grey,
+				"  ‹",
+				"‹‹ ",
+				"±± ",
+			},
+		},
+		{
+			{
+				palette.grey,
+				" ‹ ",
+				"‹± ",
+				"±± ",
+			},
+		},
+		{
+			{
+				palette.grey,
+				"‹  ",
+				" ‹‹",
+				" ±±",
+			},
+		},
+	},
 	water = {
 		{
 			{
