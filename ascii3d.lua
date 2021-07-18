@@ -10,9 +10,10 @@ texture:setFilter("nearest", "nearest")
 local quad = love.graphics.newQuad(0,0,0,0,texture:getDimensions())
 
 local texture_geometry = vec2(16, 16)
-local tile_size = vec2(texture:getDimensions()):vdivi(texture_geometry)
 
 local ascii3d = class()
+
+ascii3d.tile_size = vec2(texture:getDimensions()):vdivi(texture_geometry)
 
 function ascii3d:new()
 	self.queue = {}
@@ -40,16 +41,16 @@ function ascii3d:draw()
 			--(likely write out z to a separate mask for various effects)
 		end
 
-		local sx = x * tile_size.x
-		local sy = (y - z) * tile_size.y
+		local sx = x * self.tile_size.x
+		local sy = (y - z) * self.tile_size.y
 		local b = glyph:byte(1)
 		local tx = math.floor(b % texture_geometry.x)
 		local ty = math.floor(b / texture_geometry.x)
 		quad:setViewport(
-			tx * tile_size.x,
-			ty * tile_size.y,
-			tile_size.x,
-			tile_size.y
+			tx * self.tile_size.x,
+			ty * self.tile_size.y,
+			self.tile_size.x,
+			self.tile_size.y
 		)
 		love.graphics.setColor(color.unpack_argb(colour))
 		love.graphics.draw(
@@ -57,8 +58,8 @@ function ascii3d:draw()
 			sx, sy,
 			rotation,
 			scale, scale,
-			tile_size.x / 2,
-			tile_size.x / 2
+			self.tile_size.x / 2,
+			self.tile_size.x / 2
 		)
 	end
 	love.graphics.pop()

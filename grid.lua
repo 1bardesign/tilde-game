@@ -11,13 +11,12 @@ local cell_size = vec2(3, 3)
 local function parse_template(template, f)
 	local z = #template - 1
 	for _, lines in ipairs(template) do
-		local longest_line = functional.find_max(lines, function(v)
+		local w = 0
+		for i, v in ipairs(lines) do
 			if type(v) == "string" then
-				return #v
+				w = math.max(w, #v)
 			end
-			return nil
-		end)
-		local w = #longest_line
+		end
 		local h = #lines
 		local cx = math.floor((cell_size.x - w) / 2)
 		local cy = math.floor((cell_size.y - h) / 2)
@@ -59,15 +58,27 @@ function cell:new(x, y)
 	self.elevation = 0
 end
 
+local _inline_celldraw_display
+local _inline_celldraw_self
+local _inline_celldraw_x
+local _inline_celldraw_y
+local function _inline_celldraw(ox, oy, z, glyph, colour)
+	_inline_celldraw_display:add(
+		_inline_celldraw_x + ox,
+		_inline_celldraw_y + oy,
+		z + _inline_celldraw_self.elevation,
+		glyph, colour
+	)
+end
 function cell:draw(display)
 	if not self.template then
 		return
 	end
-	local x = self.pos.x * cell_size.x
-	local y = self.pos.y * cell_size.y
-	parse_template(self.template, function(ox, oy, z, glyph, colour)
-		display:add(x + ox, y + oy, z + self.elevation, glyph, colour)
-	end)
+	_inline_celldraw_x = self.pos.x * cell_size.x
+	_inline_celldraw_y = self.pos.y * cell_size.y
+	_inline_celldraw_display = display
+	_inline_celldraw_self = self
+	parse_template(self.template, _inline_celldraw)
 end
 
 local grid = class({
@@ -84,7 +95,11 @@ function grid:new(w, h)
 end
 
 function grid:draw(display, near)
-	local halfsize = vec2(15, 10)
+	local halfsize = vec2(love.graphics.getDimensions())
+		:vdivi(cell_size)
+		:vdivi(display.tile_size)
+		:sdivi(4) --todo: account for zoom dynamically
+		:saddi(2)
 	for _, row in ipairs(self.cells) do
 		for _, v in ipairs(row) do
 			if intersect.aabb_point_overlap(near, halfsize, v.pos) then

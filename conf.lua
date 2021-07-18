@@ -11,6 +11,5 @@ function love.conf(t)
 	t.console = true
 
 	--720p window for now
-	t.window.width = 1280
-	t.window.height = 720
+	t.window.fullscreen = "desktop"
 end
