@@ -524,6 +524,32 @@ local template = {
 			},
 		},
 	},
+	rock_footings = {
+		{
+			{
+				palette.grey,
+				"²²²",
+				"²²²",
+				"±²²",
+			},
+		},
+		{
+			{
+				palette.grey,
+				"²²²",
+				"²²²",
+				"±²±",
+			},
+		},
+		{
+			{
+				palette.grey,
+				"²²²",
+				"²²²",
+				"±ß±",
+			},
+		},
+	},
 	boulders = {
 		{
 			{

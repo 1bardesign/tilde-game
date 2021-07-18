@@ -73,12 +73,19 @@ return function(game_state)
 					)
 				end
 			elseif type == 220 then
-				local has_rock_above = y == 1 or tile_data[ x + ( y - 2 ) * grid.size.x ] == 220;
+				local has_rock_above = y == 1 or tile_data[ x + ( y - 2 ) * grid.size.x ] == type;
+				local has_rock_below = y == grid.size.y or tile_data[ x + ( y ) * grid.size.x ] == type;
+				local chosen_template =
+					has_rock_above
+					and (has_rock_below
+						and template.rock_full
+						or template.rock_footings
+					) or template.rocks
 
 				-- rocks
 				grid:set(
 					x, y,
-					has_rock_above and table.pick_random(template.rock_full) or table.pick_random(template.rocks),
+					table.pick_random(chosen_template),
 					true,
 					"rock"
 				)
