@@ -4,17 +4,18 @@ local palette = require("palette.pigment")
 
 local template = {
 	player = {
+
 		{
 			palette.white,
-			"   ",
-			" " .. string.char( 1 ) .. " ",
-			"   ",
+			string.char( 1 ),
 		},
+		-- {
+		-- 	palette.yellow,
+		-- 	"Û",
+		-- },
 		{
 			palette.grey,
-			"   ",
-			" " .. string.char( 19 ) .. " ",
-			"   ",
+			string.char( 19 ),
 		},
 	},
 	flowers = {
