@@ -91,10 +91,22 @@ return function(game_state)
 					"rock"
 				)
 			elseif type == 248 then
+				local surrounded_by_water = true
+				for _, v in ipairs({
+					1, -1, grid.size.x, -grid.size.x
+				}) do
+					if tile_data[index + v] ~= type then
+						surrounded_by_water = false
+					end
+				end
+				local chosen_template = template.water
+				if surrounded_by_water and love.math.random() < 0.25 then
+					chosen_template = template.water_weed
+				end
 				-- water
 				grid:set(
 					x, y,
-					table.pick_random(template.water),
+					table.pick_random(chosen_template),
 					true,
 					"water",
 					-1
@@ -160,21 +172,47 @@ return function(game_state)
 					error("unknown tile type" .. tostring( type ))
 				end
 
-				-- empty / grass
-				if love.math.random() < 0.3 then
-					local t_set;
-					if love.math.random() < 0.3 then
-						t_set = template.grass.misc
-					elseif ( x + y ) % 2 == 0 then
-						t_set = template.grass.check_1
-					else
-						t_set = template.grass.check_2
+				local water_adjacent = false
+				--todo: opt: not create this macro every time
+				for _, v in ipairs(table.shuffle{
+					{"l", -1},
+					{"r", 1},
+					{"u", -grid.size.x},
+					{"d", grid.size.x},
+				}) do
+					local template_name, offset = table.unpack2(v)
+					if tile_data[index + offset] == 248 then
+						water_adjacent = template.shoreline[template_name]
+						break
 					end
+				end
+
+				if water_adjacent then
+					--shoreline
 					grid:set(
 						x, y,
-						table.pick_random(t_set),
-						false
+						table.pick_random(water_adjacent),
+						false,
+						"shore"
 					)
+				else
+					-- empty / grass
+					if love.math.random() < 0.3 then
+						local t_set;
+						if love.math.random() < 0.3 then
+							t_set = template.grass.misc
+						elseif ( x + y ) % 2 == 0 then
+							t_set = template.grass.check_1
+						else
+							t_set = template.grass.check_2
+						end
+						grid:set(
+							x, y,
+							table.pick_random(t_set),
+							false,
+							"empty"
+						)
+					end
 				end
 			end
 		end

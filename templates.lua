@@ -592,6 +592,145 @@ local template = {
 			},
 		},
 	},
+	water_weed = {
+		{
+			{
+				palette.green,
+				",  ",
+				"|  ",
+				"  ,",
+				"  .",
+			},
+			{
+				palette.blue,
+				"÷÷÷",
+				"÷÷÷",
+				"÷÷÷",
+			},
+		},
+		{
+			{
+				palette.green,
+				"   ",
+				" , ",
+				" | ",
+				",  ",
+			},
+			{
+				palette.blue,
+				"÷÷÷",
+				"÷÷÷",
+				"÷÷÷",
+			},
+		},
+		{
+			{
+				palette.purple,
+				"   ",
+				",  ",
+				palette.green,
+				"| ,",
+				" ,|",
+			},
+			{
+				palette.blue,
+				"÷÷÷",
+				"÷÷÷",
+				"÷÷÷",
+			},
+		},
+		{
+			{
+				palette.green,
+				" , ",
+				" | ",
+				palette.purple,
+				",  ",
+				palette.green,
+				"|  ",
+			},
+			{
+				palette.blue,
+				"÷÷÷",
+				"÷÷÷",
+				"÷÷÷",
+			},
+		},
+	},
+	shoreline = {
+		u = {
+			{
+				{
+					palette.green,
+					", ,",
+					" , ",
+					"   ",
+				},
+			},
+			{
+				{
+					palette.fawn,
+					", ,",
+					" , ",
+					"   ",
+				},
+			},
+		},
+		d = {
+			{
+				{
+					palette.green,
+					"   ",
+					" , ",
+					", ,",
+				}
+			},
+			{
+				{
+					palette.fawn,
+					"   ",
+					" , ",
+					", ,",
+				}
+			},
+		},
+		l = {
+			{
+				{
+					palette.green,
+					",  ",
+					" , ",
+					",  ",
+				}
+			},
+			{
+				{
+					palette.fawn,
+					",  ",
+					" , ",
+					",  ",
+				}
+			},
+		},
+		r = {
+			{
+				{
+					palette.green,
+					"  ,",
+					" , ",
+					"  ,",
+				}
+			},
+			{
+				{
+					palette.fawn,
+					"  ,",
+					" , ",
+					"  ,",
+				}
+			},
+		},
+	},
 	path = {
 		{
 			{
@@ -607,6 +746,30 @@ local template = {
 				"°° ",
 				"° °",
 				"  °",
+			},
+		},
+		{
+			{
+				palette.dark_lighter,
+				" ° ",
+				"°° ",
+				" °°",
+			},
+		},
+		{
+			{
+				palette.dark_lighter,
+				" ° ",
+				"° °",
+				" °",
+			},
+		},
+		{
+			{
+				palette.dark_lighter,
+				"° °",
+				" ° ",
+				"° °",
 			},
 		},
 	},
