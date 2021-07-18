@@ -30,6 +30,14 @@ return function(game_state)
 					true,
 					"tree"
 				)
+			elseif type == 21 then
+				-- trees
+				grid:set(
+					x, y,
+					table.pick_random(template.tree_2),
+					true,
+					"tree"
+				)
 			elseif type == 44 then
 				-- an empty collision space
 				grid:set(
@@ -150,6 +158,6 @@ return function(game_state)
 		local dim = vec2( 1 + region.width / exported_map.tilewidth, 1 + region.height / exported_map.tileheight )
 		local hs = dim:smul(0.5,0.5)
 		local center = tl:vadd( hs )
-		game_state.regions[ region.id ] = { region.name, center, hs }
+		game_state.regions[ region.id ] = { region.name, center, hs, region.properties }
 	end
 end

@@ -1,5 +1,5 @@
 function love.conf(t)
-	local name = "s e r p e n t"
+	local name = "forest"
 
 	t.version = "11.3"
 

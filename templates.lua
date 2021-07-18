@@ -244,6 +244,98 @@ local template = {
 			},
 		},
 	},
+	tree_2 = {
+		{
+			{
+				palette.white,
+				"°°°°°",
+				"°°°°°",
+				"     ",
+			},
+			{
+				palette.purple,
+				"   ",
+				" ºÙ",
+				"   ",
+			},
+			{
+				palette.purple,
+				"   ",
+				" º ",
+				"   ",
+			},
+			{
+				palette.purple,
+				"   ",
+				" º ",
+				"   ",
+			},
+			{
+				palette.purple,
+				"   ",
+				" º ",
+				"   ",
+			},
+		},
+		{
+			{
+				palette.white,
+				" °°° ",
+				"°°°°°",
+				"     ",
+			},
+			{
+				palette.purple,
+				"   ",
+				"Àº ",
+				"   ",
+			},
+			{
+				palette.purple,
+				"   ",
+				" ºÙ",
+				"   ",
+			},
+			{
+				palette.purple,
+				"   ",
+				" º ",
+				"   ",
+			},
+		},
+		{
+			{
+				palette.white,
+				" °°° ",
+				"°°°°°",
+				" ° ° ",
+			},
+			{
+				palette.purple,
+				"   ",
+				" º ",
+				"   ",
+			},
+			{
+				palette.purple,
+				"   ",
+				"Àº ",
+				"   ",
+			},
+			{
+				palette.purple,
+				"   ",
+				" º ",
+				"   ",
+			},
+			{
+				palette.purple,
+				"   ",
+				" º ",
+				"   ",
+			},
+		},
+	},
 	grass = {
 		check_1 = {
 			{

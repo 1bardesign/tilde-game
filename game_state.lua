@@ -145,6 +145,11 @@ function state:new()
 	self.rain_noise:setLooping( true )
 	self.rain_noise:setVolume( 0 )
 	love.audio.play(self.rain_noise)
+
+	self.ambient_loop = love.audio.newSource( "wav/532424__klankbeeld__forest-summer-roond-022-200619-0186.wav", "static" )
+	self.ambient_loop:setLooping( true )
+	self.ambient_loop:setVolume( 0 )
+	love.audio.play(self.ambient_loop)
 end
 
 function state:enter()
@@ -156,6 +161,8 @@ function state:enter()
 	self.is_raining = false
 	self.rain_timer = 0
 	self.rain_gain = 0
+	self.is_quiet = false
+	self.quietude = 0
 
 	require("generate_world")(self) -- populates the structures below
 	assert( self.grid )
@@ -221,19 +228,31 @@ function state:update(dt)
 		self.rain_gain = math.max( 0, self.rain_gain - dt )
 	end
 
-	self.rain_noise:setVolume( 0.25 * self.rain_gain )
-	
+	if self.is_quiet then
+		if self.quietude < 1 then
+			self.quietude = math.min( 1, self.quietude + dt * .2 )
+		end
+	elseif self.quietude > 0 then
+		self.quietude = math.max( 0, self.quietude - dt * .2 )
+	end
+
+	-- Update ambient mix
+	self.rain_noise:setVolume( 0.25 * self.rain_gain * ( 1 - self.quietude ) )
+	self.ambient_loop:setVolume( ( 1 - self.rain_gain ) * ( 1 - self.quietude ) )
 end
 
 function state:update_player_region( pos )
 	-- Detect overlapping regions
 	local regions = set()
+	local region_properties = {} -- this won't handle multiple regions with same name, but is fine for us
 	for _, region in pairs( self.regions ) do
 		name = region[1]
 		center = region[2]
 		hs = region[3]
+		properties = region[4]
 		if intersect.aabb_point_overlap( center, hs, pos ) then
 			regions:add( name )
+			region_properties[name] = properties
 		end
 	end
 
@@ -261,21 +280,26 @@ function state:update_player_region( pos )
 	end
 
 	for _, region in ipairs( new_regions:values_readonly() ) do
+		local custom_text = region_properties[region] and region_properties[region].Text or nil
 		if region == "Start" then
 			if not self.player_seen:has( region ) then
 				add_message( { text = "A Forest Walk", region_bound = region } )
 			end
 		elseif region == "WrongWay" then
-			add_message( { text = "Wrong Way", region_bound = region } )
+			add_message( { text = custom_text or "Wrong Way", region_bound = region } )
 		elseif region == "Fork" then
-			add_message( { text = "A Fork In The Path", region_bound = region } )
+			add_message( { text = custom_text or "A Fork In The Path", region_bound = region } )
 		elseif region == "Entrance" then
-			add_message( { text = "Nobody's Home", region_bound = region, priority = 1 } )
+			add_message( { text = custom_text or "Nobody's Home", region_bound = region, priority = 1 } )
 		elseif region == "House" then
-			add_message( { text = "A House In The Forest", region_bound = region } )
+			add_message( { text = custom_text or "A House In The Forest", region_bound = region } )
+		elseif region == "Feature" and custom_text then
+			add_message( { text = custom_text, region_bound = region } )
 		elseif region == "Rain" then
 			self.is_raining = true
 			use_shader = true
+		elseif region == "Quiet" then
+			self.is_quiet = true
 		elseif region == "Dark" then
 			-- TODO: Trigger dark / for instance
 			-- use_shader = true
@@ -292,6 +316,8 @@ function state:update_player_region( pos )
 		if region == "Rain" then
 			self.is_raining = false
 			use_shader = false
+		elseif region == "Quiet" then
+			self.is_quiet = false
 		elseif region == "Dark" then
 			-- use_shader = false
 		end
