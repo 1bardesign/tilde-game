@@ -46,20 +46,25 @@ function ascii3d:draw()
 		local b = glyph:byte(1)
 		local tx = math.floor(b % texture_geometry.x)
 		local ty = math.floor(b / texture_geometry.x)
+		local uv_pad = 1 / 32 --pixels
+		--account for pad
+		local tw = self.tile_size.x - uv_pad * 2
+		local th = self.tile_size.y - uv_pad * 2
+		scale = scale * self.tile_size.x / tw
 		quad:setViewport(
-			tx * self.tile_size.x,
-			ty * self.tile_size.y,
-			self.tile_size.x,
-			self.tile_size.y
+			tx * self.tile_size.x + uv_pad,
+			ty * self.tile_size.y + uv_pad,
+			tw, th
 		)
+
 		love.graphics.setColor(color.unpack_argb(colour))
 		love.graphics.draw(
 			texture, quad,
 			sx, sy,
 			rotation,
 			scale, scale,
-			self.tile_size.x / 2,
-			self.tile_size.x / 2
+			tw / 2,
+			th / 2
 		)
 	end
 	love.graphics.pop()

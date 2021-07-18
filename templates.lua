@@ -131,6 +131,38 @@ local template = {
 			},
 		},
 	},
+	crop = {
+		{
+			{
+				palette.yellow,
+				"*",
+			},
+			{
+				palette.green,
+				"",
+			},
+			{
+				palette.green,
+				"",
+			},
+		},
+		{
+			{
+				palette.yellow,
+				"*",
+			},
+			{
+				palette.green,
+				"",
+			},
+		},
+		{
+			{
+				palette.green,
+				"",
+			},
+		},
+	},
 	tree = {
 		{
 			{
@@ -554,25 +586,49 @@ local template = {
 		{
 			{
 				palette.grey,
-				"  Ü",
-				"ÜÜ ",
-				"±± ",
+				" ±²",
+				"Ü±±",
+				"²² ",
 			},
 		},
 		{
 			{
 				palette.grey,
 				" Ü ",
-				"Ü± ",
-				"±± ",
+				"±² ",
+				"²²±",
 			},
 		},
 		{
 			{
 				palette.grey,
 				"Ü  ",
-				" ÜÜ",
-				" ±±",
+				"± ±",
+				" ²²",
+			},
+		},
+		{
+			{
+				palette.grey,
+				" Ü ",
+				"  Ü",
+				"Ü²²",
+			},
+		},
+		{
+			{
+				palette.grey,
+				"  Ü",
+				" ²²",
+				" Ü ",
+			},
+		},
+		{
+			{
+				palette.grey,
+				"Ü  ",
+				"²² ",
+				"  Ü",
 			},
 		},
 	},
@@ -588,6 +644,48 @@ local template = {
 				palette.blue,
 				"÷÷÷",
 				"÷÷÷",
+				"÷÷÷",
+			},
+		},
+	},
+	waterfall = {
+		{
+			{
+				palette.dark,
+				"ÜÛÜ",
+				palette.blue,
+				"÷÷÷",
+				palette.grey,
+				"   ",
+			},
+			{
+				palette.dark,
+				"ÛÛÛ",
+				palette.blue,
+				"vvv",
+				palette.grey,
+				"   ",
+			},
+			{
+				palette.dark,
+				"ÛÛÛ",
+				palette.blue,
+				"vvv",
+				palette.grey,
+				"   ",
+			},
+			{
+				palette.dark,
+				"ÛÛÛ",
+				palette.blue,
+				"vvv",
+				palette.grey,
+				"   ",
+			},
+			{
+				palette.blue,
+				"vvv",
+				"±±±",
 				"÷÷÷",
 			},
 		},

@@ -9,6 +9,8 @@ local use_shader = false
 
 --setup instance
 function state:new()
+	ZOOM_LEVEL = math.ceil(love.graphics.getHeight() / 1080 * 3)
+
 	self.background_colour = palette.dark
 	--storage for game screen
 	self.canvas = love.graphics.newCanvas(love.graphics.getWidth(), love.graphics.getHeight())
@@ -334,8 +336,12 @@ function state:draw()
 		love.graphics.getWidth() / 2,
 		love.graphics.getHeight() / 2
 	)
-	love.graphics.scale(2)
-	local cx, cy = self.player.camera_pos:vmul(grid.cell_size):smuli(8):smuli(-1):unpack()
+	love.graphics.scale(ZOOM_LEVEL)
+	local cx, cy = self.player.camera_pos
+		:vmul(self.grid.cell_size)
+		:vmuli(self.display.tile_size)
+		:smuli(-1)
+		:unpack()
 	love.graphics.translate(cx, cy)
 	--draw world
 	love.graphics.setCanvas(self.canvas)

@@ -98,8 +98,9 @@ function grid:draw(display, near)
 	local halfsize = vec2(love.graphics.getDimensions())
 		:vdivi(cell_size)
 		:vdivi(display.tile_size)
-		:sdivi(4) --todo: account for zoom dynamically
-		:saddi(2)
+		:sdivi(ZOOM_LEVEL)
+		:sdivi(2) --halfsize
+		:saddi(2) --pad margin in case of tall tiles
 	for _, row in ipairs(self.cells) do
 		for _, v in ipairs(row) do
 			if intersect.aabb_point_overlap(near, halfsize, v.pos) then

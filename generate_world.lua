@@ -39,14 +39,6 @@ return function(game_state)
 					true,
 					"tree"
 				)
-			elseif type == 44 then
-				-- an empty collision space
-				grid:set(
-					x, y,
-					nil,
-					true,
-					"tree"
-				)
 			elseif type == 8 then
 				-- mushrooms
 				grid:set(
@@ -111,6 +103,23 @@ return function(game_state)
 					"water",
 					-1
 				)
+			elseif type == 246 then
+				-- water
+				grid:set(
+					x, y,
+					table.pick_random(template.waterfall),
+					true,
+					"water",
+					-1
+				)
+			elseif type == 158 then
+				-- crop
+				grid:set(
+					x, y,
+					table.pick_random(template.crop),
+					false,
+					"empty"
+				)
 			elseif type == 48 then
 				-- path
 				grid:set(
@@ -169,7 +178,7 @@ return function(game_state)
 				table.insert( game_state.spawns["bird"], vec2( x, y ) )
 			else
 				if not ( type == 0 or type == 33) then
-					error("unknown tile type" .. tostring( type ))
+					error(("unknown tile type %s at (%d, %d)"):format(type, x, y))
 				end
 
 				local water_adjacent = false
