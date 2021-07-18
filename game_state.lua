@@ -5,25 +5,27 @@ local template = require("templates")
 
 local state = class()
 
-local use_shader = false
+local use_shader = true
 
 --setup instance
 function state:new()
 	ZOOM_LEVEL = math.ceil(love.graphics.getHeight() / 1080 * 3)
 
 	self.background_colour = palette.dark
+	local function screen_canvas()
+		return love.graphics.newCanvas(love.graphics.getWidth(), love.graphics.getHeight())
+	end
 	--storage for game screen
-	self.canvas = love.graphics.newCanvas(love.graphics.getWidth(), love.graphics.getHeight())
+	self.canvas = screen_canvas()
 	--storage for blurred game screen
-	self.blurred = love.graphics.newCanvas(love.graphics.getWidth(), love.graphics.getHeight())
 	self.blur_shader = love.graphics.newShader([[
 		uniform vec2 res;
+		uniform vec2 radius;
 		vec4 effect(vec4 c, Image t, vec2 uv, vec2 px) {
 			vec4 accum = vec4(0.0);
 			float total = 0.0;
-			const float r = 2.0;
-			for (float oy = -r; oy <= r; oy++) {
-				for (float ox = -r; ox <= r; ox++) {
+			for (float oy = -radius.y; oy <= radius.y; oy++) {
+				for (float ox = -radius.x; ox <= radius.x; ox++) {
 					accum += Texel(t, uv + vec2(ox, oy) / res);
 					total++;
 				}
@@ -32,9 +34,10 @@ function state:new()
 		}
 	]])
 	self.blur_shader:send("res", {love.graphics.getDimensions()})
+	self.blurred = {screen_canvas(), screen_canvas()}
 	--storage for feedback effects
-	self.current_frame = love.graphics.newCanvas(love.graphics.getWidth(), love.graphics.getHeight())
-	self.last_frame = love.graphics.newCanvas(love.graphics.getWidth(), love.graphics.getHeight())
+	self.current_frame = screen_canvas()
+	self.last_frame = screen_canvas()
 
 	self.shader = love.graphics.newShader([[
 		uniform float vignette_scale;
@@ -56,6 +59,8 @@ function state:new()
 
 		uniform vec2 camera_pos;
 		uniform float camera_scale;
+
+		uniform float feedback_amount;
 
 		vec4 effect(vec4 c, Image t, vec2 uv, vec2 px) {
 			float d = length((uv - vec2(0.5)) * vec2(1.0, res.y / res.x)) * 2.0;
@@ -91,7 +96,7 @@ function state:new()
 			//and feedback scaled old frame
 			zoom_uv = (zoom_uv - vec2(0.5)) * 0.99 + vec2(0.5);
 
-			float old_frame_amount = clamp(mix(0.1, 0.9, d), 0.0, 1.0);
+			float old_frame_amount = clamp(mix(0.1, 0.9, d), 0.0, 1.0) * feedback_amount;
 			vec4 feedback_px = Texel(last_frame, zoom_uv);
 			feedback_px = mix(feedback_px, vignette_colour, 0.1);
 			c = mix(c, feedback_px, old_frame_amount);
@@ -160,11 +165,16 @@ function state:enter()
 	self.ui_display = require("ascii3d")()
 	self.objects = {}
 	self.message_stack = {}
-	self.is_raining = false
 	self.rain_timer = 0
 	self.rain_gain = 0
-	self.is_quiet = false
 	self.quietude = 0
+
+	--stackable effects
+	self.is_raining = 0
+	self.is_dark = 0
+	self.is_quiet = 0
+
+	self:update_shader_targets()
 
 	require("generate_world")(self) -- populates the structures below
 	assert( self.grid )
@@ -176,14 +186,14 @@ function state:enter()
 	self.player = require("player")(self, player_spawn )
 	table.insert(self.objects, self.player)
 	
-	for k,poses in pairs( self.spawns ) do
+	for k, positions in pairs( self.spawns ) do
 		if k == "frog" then
-			for _, pos in ipairs( poses ) do
+			for _, pos in ipairs( positions ) do
 				local frog = require("frog")( self, pos.x, pos.y )
 				table.insert(self.objects, frog)
 			end
 		elseif k == "bird" then
-			for _, pos in ipairs( poses ) do
+			for _, pos in ipairs( positions ) do
 				local bird = require("bird")( self, pos.x, pos.y )
 				table.insert(self.objects, bird)
 			end
@@ -207,6 +217,34 @@ function state:tick()
 	end
 end
 
+function state:update_shader_targets()
+	self.blur_target =
+		(self.is_raining > 0 or self.is_dark > 0) and 8.0
+		or 4.0
+	self.vignette_target =
+		self.is_raining > 0 and 1.0
+		or 0.1
+	self.darken_target =
+		self.is_dark > 0 and 3.0
+		or self.is_raining > 0 and 1.0
+		or 0.0
+	self.distortion_target =
+		self.is_raining > 0 and 1.0
+		or 0.0
+	self.feedback_target =
+		self.is_raining > 0 and 1.0
+		or self.is_quiet > 0 and 0.5
+		or 0.15
+
+	--update towards target effect amount
+	local lerp_speed = 0.05
+	self.blur_amount = math.lerp(self.blur_amount or self.blur_target, self.blur_target, lerp_speed)
+	self.vignette_amount = math.lerp(self.vignette_amount or self.vignette_target, self.vignette_target, lerp_speed)
+	self.darken_amount = math.lerp(self.darken_amount or self.darken_target, self.darken_target, lerp_speed)
+	self.distortion_amount = math.lerp(self.distortion_amount or self.distortion_target, self.distortion_target, lerp_speed)
+	self.feedback_amount = math.lerp(self.feedback_amount or self.feedback_target, self.feedback_target, lerp_speed)
+end
+
 function state:update(dt)
 	-- tick in soft-realtime
 	self.time_since_last_tick = self.time_since_last_tick + dt
@@ -221,7 +259,7 @@ function state:update(dt)
 	end
 
 	--update effects etc
-	if self.is_raining then
+	if self.is_raining > 0 then
 		self.rain_timer = self.rain_timer + dt
 		if self.rain_gain < 1 then
 			self.rain_gain = math.min( 1, self.rain_gain + dt )
@@ -230,7 +268,7 @@ function state:update(dt)
 		self.rain_gain = math.max( 0, self.rain_gain - dt )
 	end
 
-	if self.is_quiet then
+	if self.is_quiet > 0 then
 		if self.quietude < 1 then
 			self.quietude = math.min( 1, self.quietude + dt * .2 )
 		end
@@ -298,13 +336,11 @@ function state:update_player_region( pos )
 		elseif region == "Feature" and custom_text then
 			add_message( { text = custom_text, region_bound = region } )
 		elseif region == "Rain" then
-			self.is_raining = true
-			use_shader = true
+			self.is_raining = self.is_raining + 1
 		elseif region == "Quiet" then
-			self.is_quiet = true
+			self.is_quiet = self.is_quiet + 1
 		elseif region == "Dark" then
-			-- TODO: Trigger dark / for instance
-			-- use_shader = true
+			self.is_dark = self.is_dark + 1
 		end
 	end
 
@@ -316,12 +352,11 @@ function state:update_player_region( pos )
 		-- Specific region exit actions
 		-- TODO: When exit "Start" for first time zoom camera out a little
 		if region == "Rain" then
-			self.is_raining = false
-			use_shader = false
+			self.is_raining = self.is_raining - 1
 		elseif region == "Quiet" then
-			self.is_quiet = false
+			self.is_quiet = self.is_quiet - 1
 		elseif region == "Dark" then
-			-- use_shader = false
+			self.is_dark = self.is_dark - 1
 		end
 	end
  
@@ -354,7 +389,7 @@ function state:draw()
 	end
 
 	-- draw dynamic effects
-	if self.is_raining then
+	if self.is_raining > 0 then
 		-- TODO: doesnt need to be on display layer
 		local x = math.floor( self.player.camera_pos.x )
 		local y = math.floor( self.player.camera_pos.y ) + 2
@@ -389,29 +424,40 @@ function state:draw()
 	love.graphics.setBlendMode("alpha", "premultiplied")
 
 	if use_shader then
+		self:update_shader_targets()
+
 		--blur current frame
-		love.graphics.setCanvas(self.blurred)
+		local blur_rad = self.blur_amount
+		love.graphics.setCanvas(self.blurred[1])
+		self.blur_shader:send("radius", {blur_rad, 0})
 		love.graphics.setShader(self.blur_shader)
 		love.graphics.draw(self.canvas)
+		love.graphics.setCanvas(self.blurred[2])
+		self.blur_shader:send("radius", {0, blur_rad})
+		love.graphics.setShader(self.blur_shader)
+		love.graphics.draw(self.blurred[1])
 
 		--effects
 		love.graphics.setCanvas(self.current_frame)
 		love.graphics.clear(colour.unpack_argb(self.background_colour))
 		love.graphics.setShader(self.shader)
+
 		local vigenette_speed = 1 / 20
 		local vignette_time = math.sin(love.timer.getTime() * math.tau * vigenette_speed) * 0.5 + 0.5
-		local vignette_overall = 0.5
+
 		local distortion_speed = 1 / 13
 		local distortion_time = math.sin(love.timer.getTime() * math.tau * distortion_speed) * 0.5 + 0.5
-		self.shader:send("vignette_scale", math.lerp(0.6, 0.8, vignette_time) * vignette_overall)
-		self.shader:send("vignette_darken_scale", math.lerp(0.5, 0.25, vignette_time) * vignette_overall)
-		self.shader:send("distortion_scale", math.lerp(0.2, 0.8, distortion_time))
+
+		self.shader:send("vignette_scale", math.lerp(0.6, 0.8, vignette_time) * self.vignette_amount)
+		self.shader:send("vignette_darken_scale", math.lerp(0.5, 0.25, vignette_time) * self.darken_amount)
+		self.shader:send("distortion_scale", math.lerp(0.2, 0.8, distortion_time) * self.distortion_amount)
 		self.shader:send("time", love.timer.getTime())
 		self.shader:send("camera_pos", {cx, cy})
 		self.shader:send("camera_scale", 2)
 		self.shader:send("last_frame", self.last_frame)
-		self.shader:send("blurred", self.blurred)
+		self.shader:send("blurred", self.blurred[2])
 		self.shader:send("noise_offset", {love.math.random(), love.math.random()})
+		self.shader:send("feedback_amount", self.feedback_amount)
 		love.graphics.setColor(1, 1, 1, 1)
 		love.graphics.draw(self.canvas)
 	else
