@@ -20,7 +20,8 @@ return function(game_state)
 	local grid = game_state.grid;
 	for y=1, grid.size.y do
 		for x=1, grid.size.x do
-			local type = tile_data[ x + ( y - 1 ) * grid.size.x ];
+			local index = x + ( y - 1 ) * grid.size.x
+			local type = tile_data[index]
 
 			if type == 25 then
 				-- trees
@@ -73,8 +74,8 @@ return function(game_state)
 					)
 				end
 			elseif type == 220 then
-				local has_rock_above = y == 1 or tile_data[ x + ( y - 2 ) * grid.size.x ] == type;
-				local has_rock_below = y == grid.size.y or tile_data[ x + ( y ) * grid.size.x ] == type;
+				local has_rock_above = y == 1 or tile_data[ index - grid.size.x ] == type;
+				local has_rock_below = y == grid.size.y or tile_data[ index + grid.size.x ] == type;
 				local chosen_template =
 					has_rock_above
 					and (has_rock_below
@@ -123,12 +124,16 @@ return function(game_state)
 					"building"
 				)
 			elseif type == 36 then
-				local has_roof_above = tile_data[ x + ( y - 2 ) * grid.size.x ] == type;
+				local tile_above = tile_data[ index - grid.size.x ]
+				local has_roof_above = tile_above == type
+				local has_building_above = tile_above == 204
 
 				-- roof
 				grid:set(
 					x, y,
-					has_roof_above and template.house.roof or template.house.roof_top,
+					has_roof_above and template.house.roof
+						or has_building_above and template.house.roof_trim
+						or template.house.roof_top,
 					true,
 					"building"
 				)

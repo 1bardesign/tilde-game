@@ -729,6 +729,20 @@ local template = {
 				"   ",
 			},
 		},
+		roof_trim = {
+			{
+				palette.yellow,
+				"---",
+				"±±±",
+				"±±±",
+			},
+			{
+				palette.yellow,
+				"   ",
+				"   ",
+				"   ",
+			},
+		},
 	}
 }
 
