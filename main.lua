@@ -2,8 +2,9 @@ require("batteries"):export()
 
 local game_state = state_machine({
 	game = require("game_state")(),
+	title = require("title_state")(),
 	--todo: title, win
-}, "game")
+}, "title")
 
 love.keyboard.setKeyRepeat(true)
 
