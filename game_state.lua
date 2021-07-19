@@ -1,7 +1,7 @@
 local grid = require("grid")
 
 local palette = require("palette.pigment")
-local template = require("templates")
+local sounds = require("sounds")
 
 local state = class()
 
@@ -153,7 +153,7 @@ function state:new()
 	self.rain_noise:setVolume( 0 )
 	love.audio.play(self.rain_noise)
 
-	self.ambient_loop = love.audio.newSource( "wav/532424__klankbeeld__forest-summer-roond-022-200619-0186.wav", "static" )
+	self.ambient_loop = love.audio.newSource( "wav/ambience.wav", "static" )
 	self.ambient_loop:setLooping( true )
 	self.ambient_loop:setVolume( 0 )
 	love.audio.play(self.ambient_loop)
@@ -332,14 +332,17 @@ function state:update_player_region( pos )
 			end
 		elseif region == "WrongWay" then
 			add_message( { text = custom_text or "It's Time To Go Home", region_bound = region } )
+			sounds.play( sounds.sound.oh, 0.5 )
 		elseif region == "Fork" then
 			add_message( { text = custom_text or "A Fork In The Path", region_bound = region } )
 		elseif region == "Entrance" then
 			add_message( { text = custom_text or "Nobody's Home", region_bound = region, priority = 1 } )
+			sounds.play( sounds.sound.oh, 0.5 )
 		elseif region == "House" then
 			add_message( { text = custom_text or "A House In The Forest", region_bound = region } )
 		elseif region == "Feature" and custom_text then
 			add_message( { text = custom_text, region_bound = region } )
+			sounds.play( sounds.sound.oh, 0.5 )
 		elseif region == "Rain" then
 			self.is_raining = self.is_raining + 1
 		elseif region == "Quiet" then
