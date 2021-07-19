@@ -73,16 +73,32 @@ local function find_target_pos( grid, pos, dir )
 		return target_pos
 	end
 
-	-- Try move diagonally (through small gaps)
-	local test_pos1 = dir.y == 0 and pos:vadd( dir ):vadd( vec2( 0, -1 ) ) or pos:vadd( dir ):vadd( vec2( -1, 0 ) )
-	local test_pos2 = dir.y == 0 and pos:vadd( dir ):vadd( vec2( 0, 1 ) ) or pos:vadd( dir ):vadd( vec2( 1, 0 ) )
+	if dir.x ~= 0 and dir.y ~= 0 then
+		-- When moving diagonally try to push perpendicular to obstacles
+		local test_pos1 = pos:vadd( vec2( 0, dir.y ) )
+		local test_pos2 = pos:vadd( vec2( dir.x, 0 ) )
 
-	if not grid:solid_at(test_pos1:unpack()) then
-		return test_pos1
+		if not grid:solid_at(test_pos1:unpack()) then
+			return test_pos1
+		end
+
+		if not grid:solid_at(test_pos2:unpack()) then
+			return test_pos2
+		end
 	end
 
-	if not grid:solid_at(test_pos2:unpack()) then
-		return test_pos2
+	if dir.x == 0 or dir.y == 0 then
+		-- When moving orthogonally try to push diagonally around obstacles
+		local test_pos1 = dir.y == 0 and pos:vadd( dir ):vadd( vec2( 0, -1 ) ) or pos:vadd( dir ):vadd( vec2( -1, 0 ) )
+		local test_pos2 = dir.y == 0 and pos:vadd( dir ):vadd( vec2( 0, 1 ) ) or pos:vadd( dir ):vadd( vec2( 1, 0 ) )
+
+		if not grid:solid_at(test_pos1:unpack()) then
+			return test_pos1
+		end
+
+		if not grid:solid_at(test_pos2:unpack()) then
+			return test_pos2
+		end
 	end
 end
 
@@ -131,32 +147,38 @@ function player:tick()
 	end
 end
 
-local get_command = function( k )
-	local move = nil
-	if k == "up" or k == "w" then move = vec2(0, -1) end
-	if k == "down" or k == "s" then move = vec2(0, 1) end
-	if k == "left" or k == "a" then move = vec2(-1, 0) end
-	if k == "right" or k == "d" then move = vec2(1, 0) end
-	return move
+local combine_commands = function( commands )
+	local combined_move = vec2( 0, 0 )
+	for k, v in pairs( commands ) do
+		if v then
+			local move = vec2( 0, 0 )
+			if k == "up" or k == "w" then move = vec2(0, -1) end
+			if k == "down" or k == "s" then move = vec2(0, 1) end
+			if k == "left" or k == "a" then move = vec2(-1, 0) end
+			if k == "right" or k == "d" then move = vec2(1, 0) end
+			combined_move:vaddi( move )
+		end
+	end
+	if combined_move.x ~= 0 or combined_move.y ~= 0 then
+		combined_move.x = math.clamp( combined_move.x, -1, 1 )
+		combined_move.y = math.clamp( combined_move.y, -1, 1 )
+		return combined_move
+	end
 end
 
 function player:keypressed(k)
-	self.current_command = get_command( k )
-	if self.current_command then
+	local has_existing_command = table.key_of( self.active_commands, true ) ~= nil
+	self.active_commands[ k ] = true
+	self.current_command = combine_commands( self.active_commands )
+	if self.current_command and not has_existing_command then
 		self.ticker = 0
 	end
-	self.active_commands[ k ] = true
 end
 
 function player:keyreleased(k)
 	self.current_command = nil
 	self.active_commands[ k ] = nil
-	for k, v in pairs( self.active_commands ) do
-		if v then
-			self.current_command = get_command( k )
-			break
-		end
-	end
+	self.current_command = combine_commands( self.active_commands )
 end
 
 function player:draw(display)
