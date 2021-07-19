@@ -1,9 +1,12 @@
 require("batteries"):export()
 
+SCREEN_OVERLAY = require("screen_overlay")()
+
 local game_state = state_machine({
 	game = require("game_state")(),
 	title = require("title_state")(),
 	--todo: title, win
+	quit = {enter = function() love.event.quit() end}, --stub
 }, "title")
 
 love.keyboard.setKeyRepeat(true)
@@ -16,6 +19,7 @@ function love.update(dt)
 	table.insert(times, "update")
 	table.insert(times, love.timer.getTime())
 	game_state:update(dt)
+	SCREEN_OVERLAY:update(dt)
 	table.insert(times, love.timer.getTime())
 end
 
@@ -23,6 +27,7 @@ function love.draw()
 	table.insert(times, "draw")
 	table.insert(times, love.timer.getTime())
 	game_state:draw()
+	SCREEN_OVERLAY:draw()
 	table.insert(times, love.timer.getTime())
 
 	if love.keyboard.isDown("`") then
@@ -55,10 +60,6 @@ function love.keypressed(k,_,isrepeat)
 		elseif k == "r" then
 			love.event.quit("restart")
 		end
-	end
-
-	if k == "escape" then
-		love.event.quit()
 	end
 
 	if not isrepeat then

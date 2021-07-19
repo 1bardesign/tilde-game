@@ -160,6 +160,11 @@ function state:new()
 end
 
 function state:enter()
+	--fade in
+	SCREEN_OVERLAY:flash(palette.dark, 1)
+	self.done = false
+	self.next = "title"
+
 	--setup anything to be done on state enter here (ie reset everything)
 	self.display = require("ascii3d")()
 	self.ui_display = require("ascii3d")()
@@ -251,6 +256,12 @@ function state:update_shader_targets()
 end
 
 function state:update(dt)
+	if self.done then
+		if SCREEN_OVERLAY:done() then
+			return self.next
+		end
+	end
+
 	-- tick in soft-realtime
 	self.time_since_last_tick = self.time_since_last_tick + dt
 	if self.time_since_last_tick > 0.1 then
@@ -350,7 +361,11 @@ function state:update_player_region( pos )
 		elseif region == "Dark" then
 			self.is_dark = self.is_dark + 1
 		elseif region == "Finish" then
-			-- TODO: Fade out - back to titles/credits
+			if not self.done then
+				self.done = true
+				SCREEN_OVERLAY:fade(palette.dark, 1)
+				-- sounds.play(sounds.sound.move, 1) --todo: win sound
+			end
 		end
 	end
 
@@ -482,7 +497,15 @@ function state:draw()
 end
 
 function state:keypressed(k)
-	self.player:keypressed(k)
+	if k == "escape" then
+		if not self.done then
+			self.done = true
+			SCREEN_OVERLAY:fade(palette.dark, 1)
+			self.next = "quit"
+		end
+	else
+		self.player:keypressed(k)
+	end
 end
 
 function state:keyreleased(k)

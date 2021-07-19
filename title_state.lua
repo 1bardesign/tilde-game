@@ -18,8 +18,13 @@ function state:new()
 end
 
 function state:enter()
-	--setup anything to be done on state enter here (ie reset everything)
 	self.display = require("ascii3d")()
+
+	--
+	SCREEN_OVERLAY:flash(palette.dark, 1)
+	self.done = false
+	self.already_played = nil
+	self.next = "game"
 end
 
 function state:exit()
@@ -28,8 +33,10 @@ end
 
 function state:update(dt)
 	if self.done then
-		sounds.play(sounds.sound.move, 1)
-		return "game"
+		if SCREEN_OVERLAY:done() then
+			self.already_played = true
+			return self.next
+		end
 	end
 end
 
@@ -47,13 +54,20 @@ function state:draw()
 	-- draw title screen
 	local flash_period = 1
 	local flash = math.wrap(love.timer.getTime(), 0, flash_period) < flash_period / 2 and palette.white or palette.grey
-	for _, v in ipairs({
-		{-4, palette.green, "~", },
-		{-2, palette.fawn, "(pronounced \"tilde\")", },
-		{2, palette.fawn, "a game by ben and max", },
-		{4, palette.fawn, "july 2021" },
-		{8, flash, "press any key to start" },
-	}) do
+	for _, v in ipairs(table.append_inplace({
+			{-6, palette.green, "~", },
+			{-4, palette.fawn, "(pronounced \"tilde\")", },
+			{0, palette.fawn, "a game by ben and max - july 2021", },
+		},
+		self.already_played and {
+			{6, palette.grey, "thanks for playing!" },
+		} or {
+			{6, palette.grey, "arrows or wasd to move" },
+			{8, palette.grey, "escape to quit at any time" },
+		}, {
+			{12, flash, "press any key to start" },
+		}
+	)) do
 		local oy, col, s = unpack(v)
 		for i, char in ipairs(s:split()) do
 			self.display:add(i - #s / 2 - 1, oy, 0, char, col)
@@ -68,7 +82,15 @@ function state:draw()
 end
 
 function state:keypressed(k)
+	if self.done then return end
+
+	if k == "escape" then
+		self.next = "quit"
+	end
+
 	self.done = true
+	SCREEN_OVERLAY:fade(palette.dark, 1)
+	sounds.play(sounds.sound.move, 1)
 end
 
 function state:keyreleased(k)
