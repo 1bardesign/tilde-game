@@ -326,7 +326,7 @@ function state:update_player_region( pos )
 				add_message( { text = "A Forest Walk", region_bound = region } )
 			end
 		elseif region == "WrongWay" then
-			add_message( { text = custom_text or "Wrong Way", region_bound = region } )
+			add_message( { text = custom_text or "The Other Way", region_bound = region } )
 		elseif region == "Fork" then
 			add_message( { text = custom_text or "A Fork In The Path", region_bound = region } )
 		elseif region == "Entrance" then
@@ -341,6 +341,8 @@ function state:update_player_region( pos )
 			self.is_quiet = self.is_quiet + 1
 		elseif region == "Dark" then
 			self.is_dark = self.is_dark + 1
+		elseif region == "Finish" then
+			-- TODO: Fade out - back to titles/credits
 		end
 	end
 
