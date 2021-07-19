@@ -332,17 +332,17 @@ function state:update_player_region( pos )
 			end
 		elseif region == "WrongWay" then
 			add_message( { text = custom_text or "It's Time To Go Home", region_bound = region } )
-			sounds.play( sounds.sound.oh, 0.5 )
+			-- sounds.play( sounds.sound.oh, 0.5 )
 		elseif region == "Fork" then
 			add_message( { text = custom_text or "A Fork In The Path", region_bound = region } )
 		elseif region == "Entrance" then
 			add_message( { text = custom_text or "Nobody's Home", region_bound = region, priority = 1 } )
-			sounds.play( sounds.sound.oh, 0.5 )
+			-- sounds.play( sounds.sound.oh, 0.5 )
 		elseif region == "House" then
 			add_message( { text = custom_text or "A House In The Forest", region_bound = region } )
 		elseif region == "Feature" and custom_text then
 			add_message( { text = custom_text, region_bound = region } )
-			sounds.play( sounds.sound.oh, 0.5 )
+			-- sounds.play( sounds.sound.oh, 0.5 )
 		elseif region == "Rain" then
 			self.is_raining = self.is_raining + 1
 		elseif region == "Quiet" then

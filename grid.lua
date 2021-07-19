@@ -138,6 +138,10 @@ function grid:solid_at(x, y)
 	return not self:in_bounds(x, y) or self:cell(x, y).solid
 end
 
+function grid:water_at(x, y)
+	return self:in_bounds(x, y) and self:cell(x, y).type == "water"
+end
+
 --export
 grid.cell_size = cell_size
 grid.parse_template = parse_template

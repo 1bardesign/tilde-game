@@ -8,7 +8,7 @@ local frog = class({
 })
 
 local can_enter_cell = function( grid, x, y )
-	return not grid:solid_at(x, y);
+	return not grid:solid_at(x, y) or grid:water_at(x, y)
 end
 
 function frog:new(game_state, ox, oy)
