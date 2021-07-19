@@ -197,6 +197,11 @@ function state:enter()
 				local bird = require("bird")( self, pos.x, pos.y )
 				table.insert(self.objects, bird)
 			end
+		elseif k == "deer" then
+			for _, pos in ipairs( positions ) do
+				local deer = require("deer")( self, pos.x, pos.y )
+				table.insert(self.objects, deer)
+			end
 		end
 		-- etc
 		-- local snake_spawn = tablex.take_random( self.spawns );
@@ -326,7 +331,7 @@ function state:update_player_region( pos )
 				add_message( { text = "A Forest Walk", region_bound = region } )
 			end
 		elseif region == "WrongWay" then
-			add_message( { text = custom_text or "The Other Way", region_bound = region } )
+			add_message( { text = custom_text or "It's Time To Go Home", region_bound = region } )
 		elseif region == "Fork" then
 			add_message( { text = custom_text or "A Fork In The Path", region_bound = region } )
 		elseif region == "Entrance" then

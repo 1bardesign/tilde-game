@@ -5,7 +5,7 @@ return {
 		serpent_move = love.audio.newSource( "wav/move1.wav", "static" ),
 		serpent_growl = love.audio.newSource( "wav/serpent_growl.wav", "static" ),
 		frog_jump = love.audio.newSource( "wav/frog_jump.wav", "static" ),
-		-- etc
+		deer_jump = love.audio.newSource( "wav/deer_jump.wav", "static" ),
 	},
 	play = function( sound, volume )
 		sound:setVolume( volume and volume or 1 )

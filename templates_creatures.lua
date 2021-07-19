@@ -26,6 +26,60 @@ local template = {
 			},
 		}
 	},
+	deer = {
+		frame_1 = {
+			{
+				palette.white,
+				"    ",
+				"    ",
+				" " .. string.char(29) .. "  ",
+				"Ï   ",
+				"    ",
+			},
+			{
+				palette.yellow,
+				"    ",
+				"    ",
+				" €  ",
+				" €‹,",
+				"    ",
+			},
+			{
+				palette.yellow,
+				"    ",
+				"    ",
+				"    ",
+				" €€ ",
+				" ÔÔ ",
+			},
+		},
+		frame_2 = {
+			{
+				palette.white,
+				"    ",
+				"    ",
+				" " .. string.char(29) .. "  ",
+				"Ï   ",
+				"    ",
+			},
+			{
+				palette.yellow,
+				"    ",
+				"    ",
+				" €  ",
+				" €‹,",
+				"    ",
+			},
+			{
+				palette.yellow,
+				"    ",
+				"    ",
+				"    ",
+				"=€€=",
+				"    ",
+			},
+		},
+	},
 	snake = {
 		head = {
 			{

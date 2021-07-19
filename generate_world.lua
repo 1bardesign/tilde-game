@@ -176,6 +176,9 @@ return function(game_state)
 			elseif type == 99 then
 				game_state.spawns["bird"] = game_state.spawns["bird"] or {}
 				table.insert( game_state.spawns["bird"], vec2( x, y ) )
+			elseif type == 101 then
+				game_state.spawns["deer"] = game_state.spawns["deer"] or {}
+				table.insert( game_state.spawns["deer"], vec2( x, y ) )
 			else
 				if not ( type == 0 or type == 33) then
 					error(("unknown tile type %s at (%d, %d)"):format(type, x, y))
