@@ -69,8 +69,8 @@ function state:draw()
 		}
 	)) do
 		local oy, col, s = unpack(v)
-		for i, char in ipairs(s:split()) do
-			self.display:add(i - #s / 2 - 1, oy, 0, char, col)
+		for i = 1, #s do
+			self.display:add(i - #s / 2 - 1, oy, 0, s:byte(i), col)
 		end
 	end
 

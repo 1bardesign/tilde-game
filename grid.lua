@@ -7,6 +7,8 @@
 --config
 local cell_size = vec2(3, 3)
 
+local space_glyph = (" "):byte(1)
+
 --doesn't actually rely on grid
 local function parse_template(template, f)
 	local z = #template - 1
@@ -33,8 +35,8 @@ local function parse_template(template, f)
 				local oy = i + cy - 1
 				for j = 1, #line do
 					local ox = j + cx - 1
-					local glyph = line:sub(j, j)
-					if glyph ~= " " then
+					local glyph = line:byte(j)
+					if glyph ~= space_glyph then
 						f(ox, oy, z, glyph, colour)
 					end
 				end

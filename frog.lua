@@ -52,10 +52,10 @@ end
 function frog:draw(display)
 
 	if self.animate_timer > 0 then
-		display:add( self.pos_wc.x, self.pos_wc.y - 1, 1, template.frog.glyph_anim_head, palette.green )
-		display:add( self.pos_wc.x, self.pos_wc.y, 1, template.frog.glyph_anim_legs, palette.green )
+		display:add( self.pos_wc.x, self.pos_wc.y - 1, 1, template.frog.glyph_anim_head:byte(1), palette.green )
+		display:add( self.pos_wc.x, self.pos_wc.y, 1, template.frog.glyph_anim_legs:byte(1), palette.green )
 	else
-		display:add( self.pos_wc.x, self.pos_wc.y, 1, template.frog.glyph_sit, palette.green )
+		display:add( self.pos_wc.x, self.pos_wc.y, 1, template.frog.glyph_sit:byte(1), palette.green )
 	end
 end
 
