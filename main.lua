@@ -56,6 +56,10 @@ function love.keypressed(k,_,isrepeat)
 		end
 	end
 
+	if k == "escape" then
+		love.event.quit()
+	end
+
 	if not isrepeat then
 		game_state:_call("keypressed", k)
 	end
