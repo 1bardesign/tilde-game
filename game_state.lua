@@ -419,11 +419,12 @@ function state:draw()
 		local x = math.floor( self.player.camera_pos.x )
 		local y = math.floor( self.player.camera_pos.y ) + 2
 		local dt = ( self.rain_timer % 0.3 ) / 0.3
+		local g = ('|'):byte(1)
 		for dx=-30,30,1 do
 			for dy=-20,20,1 do
 				local px = ( x + dx )*self.grid.cell_size.x + dt * 3
 				local py = ( y + dy )*self.grid.cell_size.y + dt * 9
-				self.display:add( px, py, 10, '|', palette.blue)
+				self.display:add( px, py, 10, g, palette.blue)
 			end
 		end
 	end
@@ -437,9 +438,9 @@ function state:draw()
 	if msg then
 		local x = self.player.camera_pos.x - #msg.text / self.grid.cell_size.x / 2
 		local y = self.player.camera_pos.y + 6
-		for i=1,#msg.text do
-			local char = msg.text:sub(i)
-			self.ui_display:add( i + x*self.grid.cell_size.x, y*self.grid.cell_size.y, 0, char, palette.white)
+		for i = 1, #msg.text do
+			local byte = msg.text:byte(i)
+			self.ui_display:add( i + x*self.grid.cell_size.x, y*self.grid.cell_size.y, 0, byte, palette.white)
 		end
 	end
 	self.ui_display:draw()

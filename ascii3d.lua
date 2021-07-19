@@ -17,10 +17,22 @@ ascii3d.tile_size = vec2(texture:getDimensions()):vdivi(texture_geometry)
 
 function ascii3d:new()
 	self.queue = {}
+	self.pool = {}
 end
 
 function ascii3d:add(x, y, z, glyph, colour, rotation, scale)
-	table.insert(self.queue, {x, y, z, glyph, colour, rotation or 0, scale or 1})
+	local t = table.remove(self.pool)
+	if not t then
+		t = {}
+	end
+	t[1] = x
+	t[2] = y
+	t[3] = z
+	t[4] = glyph
+	t[5] = colour
+	t[6] = rotation or 0
+	t[7] = scale or 1
+	table.insert(self.queue, t)
 end
 
 local function z_sort(a, b)
@@ -43,7 +55,7 @@ function ascii3d:draw()
 
 		local sx = x * self.tile_size.x
 		local sy = (y - z) * self.tile_size.y
-		local b = glyph:byte(1)
+		local b = glyph
 		local tx = math.floor(b % texture_geometry.x)
 		local ty = math.floor(b / texture_geometry.x)
 		local uv_pad = 1 / 32 --pixels
@@ -68,6 +80,7 @@ function ascii3d:draw()
 		)
 	end
 	love.graphics.pop()
+	self.pool = self.queue --reuse for next time
 	self.queue = {}
 end
 
