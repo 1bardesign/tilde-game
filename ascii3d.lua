@@ -4,7 +4,7 @@
 	chuck glyphs at it with xyz positions, they'll be drawn properly sorted as a big batch
 ]]
 
-local texture = love.graphics.newImage("cga8x8thick_edit.png")
+local texture = love.graphics.newImage("assets/cga8x8thick_edit.png")
 texture:setFilter("nearest", "nearest")
 
 local quad = love.graphics.newQuad(0,0,0,0,texture:getDimensions())

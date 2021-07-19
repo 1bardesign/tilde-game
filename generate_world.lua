@@ -166,10 +166,13 @@ return function(game_state)
 					true,
 					"building"
 				)
-			elseif type == 3 or type == 2 then
+			elseif type == 2 then
+				-- normal position
+				game_state.player_spawn = vec2( x, y )
+			elseif type == 3 then
 				-- DEBUG position
 				-- TODO: REMOVE THIS
-				game_state.player_spawn = vec2( x, y )
+				-- game_state.player_spawn = vec2( x, y )
 			elseif type == 103 then
 				game_state.spawns["frog"] = game_state.spawns["frog"] or {}
 				table.insert( game_state.spawns["frog"], vec2( x, y ) )

@@ -11,7 +11,7 @@ function state:new()
 
 	self.background_colour = palette.dark
 
-	self.ambient_loop = love.audio.newSource( "wav/ambience.wav", "static" )
+	self.ambient_loop = love.audio.newSource( "assets/wav/ambience.wav", "static" )
 	self.ambient_loop:setLooping( true )
 	self.ambient_loop:setVolume( 0.25 )
 	love.audio.play(self.ambient_loop)

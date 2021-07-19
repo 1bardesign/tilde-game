@@ -1,12 +1,12 @@
 return {
 	sound = {
-		move = love.audio.newSource( "wav/move3.wav", "static" ),
-		move_water = love.audio.newSource( "wav/move_water.wav", "static" ),
-		serpent_move = love.audio.newSource( "wav/move1.wav", "static" ),
-		serpent_growl = love.audio.newSource( "wav/serpent_growl.wav", "static" ),
-		frog_jump = love.audio.newSource( "wav/frog_jump.wav", "static" ),
-		deer_jump = love.audio.newSource( "wav/deer_jump.wav", "static" ),
-		oh = love.audio.newSource( "wav/oh.wav", "static" ),
+		move = love.audio.newSource( "assets/wav/move3.wav", "static" ),
+		move_water = love.audio.newSource( "assets/wav/move_water.wav", "static" ),
+		serpent_move = love.audio.newSource( "assets/wav/move1.wav", "static" ),
+		serpent_growl = love.audio.newSource( "assets/wav/serpent_growl.wav", "static" ),
+		frog_jump = love.audio.newSource( "assets/wav/frog_jump.wav", "static" ),
+		deer_jump = love.audio.newSource( "assets/wav/deer_jump.wav", "static" ),
+		oh = love.audio.newSource( "assets/wav/oh.wav", "static" ),
 	},
 	play = function( sound, volume )
 		sound:setVolume( volume and volume or 1 )

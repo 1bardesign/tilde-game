@@ -153,7 +153,7 @@ function state:new()
 	self.rain_noise:setVolume( 0 )
 	love.audio.play(self.rain_noise)
 
-	self.ambient_loop = love.audio.newSource( "wav/ambience.wav", "static" )
+	self.ambient_loop = love.audio.newSource( "assets/wav/ambience.wav", "static" )
 	self.ambient_loop:setLooping( true )
 	self.ambient_loop:setVolume( 0 )
 	love.audio.play(self.ambient_loop)
@@ -229,8 +229,8 @@ end
 
 function state:update_shader_targets()
 	self.blur_target =
-		(self.is_raining > 0 or self.is_dark > 0) and 8.0
-		or 4.0
+		(self.is_raining > 0 or self.is_dark > 0) and ZOOM_LEVEL * 2.5
+		or ZOOM_LEVEL * 1.5
 	self.vignette_target =
 		self.is_raining > 0 and 1.0
 		or 0.1
