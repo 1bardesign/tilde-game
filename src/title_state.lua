@@ -10,6 +10,7 @@ function state:new()
 	ZOOM_LEVEL = math.ceil(love.graphics.getHeight() / 1080 * 3)
 
 	self.background_colour = palette.dark
+	self.already_played = nil
 
 	self.ambient_loop = love.audio.newSource( "assets/wav/ambience.wav", "static" )
 	self.ambient_loop:setLooping( true )
@@ -23,7 +24,6 @@ function state:enter()
 	--
 	SCREEN_OVERLAY:flash(palette.dark, 1)
 	self.done = false
-	self.already_played = nil
 	self.next = "game"
 end
 
@@ -56,21 +56,13 @@ function state:draw()
 	local flash = math.wrap(love.timer.getTime(), 0, flash_period) < flash_period / 2 and palette.white or palette.grey
 	for _, v in ipairs(table.append_inplace({
 			{-6, palette.green, "~", },
-			-- {-4, palette.fawn, "(pronounced \"tilde\")", },
-			{-4, palette.fawn, "the path home", },
+			{-4, palette.fawn, self.already_played and "you are safely home" or "the path home", },
 			{0, palette.fawn, "max cahill", },
 			{2, palette.fawn, "ben porter", },
 		},
-		self.already_played and {
-			{6, palette.grey, "you are safely home" },
-		} or { },
-		--[[
-			{6, palette.grey, "arrows or wasd to move" },
-			{8, palette.grey, "escape to quit at any time" },
-		}, --]]
 		{
-			-- {12, flash, "press any key to start" },
-			{12, flash, "press any key" },
+			{12, flash, self.already_played and "press any key to play again" or "press any key to play" },
+			{14, palette.fawn, "press escape to quit" },
 		}
 	)) do
 		local oy, col, s = unpack(v)
