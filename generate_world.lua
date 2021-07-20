@@ -84,15 +84,25 @@ return function(game_state)
 				)
 			elseif type == 248 then
 				local surrounded_by_water = true
-				for _, v in ipairs({
-					1, -1, grid.size.x, -grid.size.x
-				}) do
-					if tile_data[index + v] ~= type then
-						surrounded_by_water = false
+				local near_shore = false
+				for i = 1, 2 do
+					for _, v in ipairs({
+						1, -1, grid.size.x, -grid.size.x
+					}) do
+						if i == 1 then
+							if tile_data[index + v] ~= type then
+								surrounded_by_water = false
+							end
+						elseif i == 2 then
+							if tile_data[index + v * 2] ~= type then
+								near_shore = true
+								break
+							end
+						end
 					end
 				end
 				local chosen_template = template.water
-				if surrounded_by_water and love.math.random() < 0.25 then
+				if surrounded_by_water and near_shore and love.math.random() < 0.25 then
 					chosen_template = template.water_weed
 				end
 				-- water
