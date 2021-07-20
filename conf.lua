@@ -6,7 +6,13 @@ function love.conf(t)
 	t.window.icon = "assets/icon.png"
 
 	-- commandline output for windows
-	t.console = true
+	t.console = false
 
-	t.window.fullscreen = "desktop"
+	local windowed = false
+	if windowed then
+		t.window.width = 1280
+		t.window.height = 720
+	else
+		t.window.fullscreen = "desktop"
+	end
 end
