@@ -15,7 +15,7 @@ return {
     {
       name = "cga8x8thick",
       firstgid = 1,
-      filename = "assets/raw/cga8x8thick.tsx"
+      filename = "../raw/cga8x8thick.tsx"
     }
   },
   layers = {
