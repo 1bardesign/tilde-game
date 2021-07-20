@@ -1,10 +1,10 @@
-local palette = require("palette.pigment")
-local template = require("templates_creatures")
-local sounds = require("sounds")
-local world_pos = require("world_pos")
+local palette = require("src.palette.pigment")
+local template = require("src.templates_creatures")
+local sounds = require("src.sounds")
+local world_pos = require("src.world_pos")
 
 local deer = class({
-	extends = require("gameobject")
+	extends = require("src.gameobject")
 })
 
 local can_enter_cell = function( grid, x, y )

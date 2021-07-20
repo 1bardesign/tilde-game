@@ -1,8 +1,8 @@
 --generate a real awesome world and write it back into the game state
 
-local template = require("templates");
-local grid = require("grid")
-local exported_map = require("exported_map")
+local template = require("src.templates");
+local grid = require("src.grid")
+local exported_map = require("src.exported_map")
 
 return function(game_state)
 	local tile_layer = functional.find_match( exported_map.layers, function( layer ) return layer.name == "Tiles" end );

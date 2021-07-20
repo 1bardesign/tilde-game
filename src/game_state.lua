@@ -1,7 +1,7 @@
-local grid = require("grid")
+local grid = require("src.grid")
 
-local palette = require("palette.pigment")
-local sounds = require("sounds")
+local palette = require("src.palette.pigment")
+local sounds = require("src.sounds")
 
 local state = class()
 
@@ -147,7 +147,7 @@ function state:new()
 	end
 
 	-- synthesize rain noise
-	local denver = require("denver")
+	local denver = require("lib.denver")
 	self.rain_noise = denver.get({waveform='pinknoise', length=6})
 	self.rain_noise:setLooping( true )
 	self.rain_noise:setVolume( 0 )
@@ -166,8 +166,8 @@ function state:enter()
 	self.next = "title"
 
 	--setup anything to be done on state enter here (ie reset everything)
-	self.display = require("ascii3d")()
-	self.ui_display = require("ascii3d")()
+	self.display = require("src.ascii3d")()
+	self.ui_display = require("src.ascii3d")()
 	self.objects = {}
 	self.message_stack = {}
 	self.rain_timer = 0
@@ -181,30 +181,30 @@ function state:enter()
 
 	self:update_shader_targets()
 
-	require("generate_world")(self) -- populates the structures below
+	require("src.generate_world")(self) -- populates the structures below
 	assert( self.grid )
 	assert( self.player_spawn )
 	assert( self.spawns )
 	assert( self.regions )
 
 	local player_spawn = self.player_spawn;
-	self.player = require("player")(self, player_spawn )
+	self.player = require("src.player")(self, player_spawn )
 	table.insert(self.objects, self.player)
 	
 	for k, positions in pairs( self.spawns ) do
 		if k == "frog" then
 			for _, pos in ipairs( positions ) do
-				local frog = require("frog")( self, pos.x, pos.y )
+				local frog = require("src.frog")( self, pos.x, pos.y )
 				table.insert(self.objects, frog)
 			end
 		elseif k == "bird" then
 			for _, pos in ipairs( positions ) do
-				local bird = require("bird")( self, pos.x, pos.y )
+				local bird = require("src.bird")( self, pos.x, pos.y )
 				table.insert(self.objects, bird)
 			end
 		elseif k == "deer" then
 			for _, pos in ipairs( positions ) do
-				local deer = require("deer")( self, pos.x, pos.y )
+				local deer = require("src.deer")( self, pos.x, pos.y )
 				table.insert(self.objects, deer)
 			end
 		end

@@ -1,10 +1,10 @@
-require("batteries"):export()
+require("lib.batteries"):export()
 
-SCREEN_OVERLAY = require("screen_overlay")()
+SCREEN_OVERLAY = require("src.screen_overlay")()
 
 local game_state = state_machine({
-	game = require("game_state")(),
-	title = require("title_state")(),
+	game = require("src.game_state")(),
+	title = require("src.title_state")(),
 	--todo: title, win
 	quit = {enter = function() love.event.quit() end}, --stub
 }, "title")

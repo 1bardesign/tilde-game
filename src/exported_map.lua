@@ -1,7 +1,6 @@
 return {
   version = "1.5",
   luaversion = "5.1",
-  tiledversion = "2021.03.23",
   tiledversion = "1.7.0",
   orientation = "orthogonal",
   renderorder = "right-down",
@@ -624,10 +623,10 @@ return {
           name = "Feature",
           type = "",
           shape = "rectangle",
-          x = 1204.25,
-          y = 1171,
-          width = 948,
-          height = 386.5,
+          x = 1280.25,
+          y = 1204,
+          width = 872,
+          height = 344.5,
           rotation = 0,
           visible = true,
           properties = {

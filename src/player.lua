@@ -2,11 +2,11 @@
 	the majestic player
 ]]
 
-local sounds = require("sounds");
-local template = require("templates");
+local sounds = require("src.sounds");
+local template = require("src.templates");
 
 local player = class({
-	extends = require("gameobject"),
+	extends = require("src.gameobject"),
 })
 
 function player:new(game_state, pos)
@@ -22,7 +22,7 @@ function player:new(game_state, pos)
 	self.move_queue = {}
 	self.current_command = nil
 	self.active_commands = {}
-	self.template = require("templates").player
+	self.template = require("src.templates").player
 	self.ticker = 0
 	self.stepper = 0
 	self.step_sound_timer = 0

@@ -1,7 +1,7 @@
-local template = require("templates_creatures")
+local template = require("src.templates_creatures")
 
 local bird = class({
-	extends = require("gameobject")
+	extends = require("src.gameobject")
 })
 
 function bird:new(game_state, ox, oy)

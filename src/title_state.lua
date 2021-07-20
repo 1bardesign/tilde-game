@@ -1,7 +1,7 @@
-local grid = require("grid")
+local grid = require("src.grid")
 
-local palette = require("palette.pigment")
-local sounds = require("sounds")
+local palette = require("src.palette.pigment")
+local sounds = require("src.sounds")
 
 local state = class()
 
@@ -18,7 +18,7 @@ function state:new()
 end
 
 function state:enter()
-	self.display = require("ascii3d")()
+	self.display = require("src.ascii3d")()
 
 	--
 	SCREEN_OVERLAY:flash(palette.dark, 1)

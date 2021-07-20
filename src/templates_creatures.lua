@@ -1,6 +1,6 @@
 -- Note file encoding is CP-437
 
-local palette = require("palette.pigment")
+local palette = require("src.palette.pigment")
 
 local template = {
 	frog = {

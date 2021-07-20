@@ -1,10 +1,10 @@
 -- A snake
-local palette = require("palette.pigment")
-local template = require("templates_creatures")
-local sounds = require("sounds")
+local palette = require("src.palette.pigment")
+local template = require("src.templates_creatures")
+local sounds = require("src.sounds")
 
 local snake = class({
-	extends = require("gameobject")
+	extends = require("src.gameobject")
 })
 
 local type = { 
