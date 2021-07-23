@@ -1,6 +1,7 @@
 require("lib.batteries"):export()
 
 SCREEN_OVERLAY = require("src.screen_overlay")()
+ZOOM_LEVEL = math.ceil(love.graphics.getHeight() / 1080 * 3)
 
 local game_state = state_machine({
 	game = require("src.game_state")(),

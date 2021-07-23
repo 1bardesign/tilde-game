@@ -9,8 +9,6 @@ local use_shader = true
 
 --setup instance
 function state:new()
-	ZOOM_LEVEL = math.ceil(love.graphics.getHeight() / 1080 * 3)
-
 	self.background_colour = palette.dark
 	local function screen_canvas()
 		return love.graphics.newCanvas(love.graphics.getWidth(), love.graphics.getHeight())
@@ -437,7 +435,14 @@ function state:draw()
 	local msg = self.message_stack[#self.message_stack]
 	if msg then
 		local x = self.player.camera_pos.x - #msg.text / self.grid.cell_size.x / 2
-		local y = self.player.camera_pos.y + 6
+		local y = self.player.camera_pos.y + math.floor(
+			love.graphics.getHeight()
+			/ ZOOM_LEVEL
+			/ self.grid.cell_size.y
+			/ self.ui_display.tile_size.y
+			/ 2
+			* 0.8
+		)
 		for i = 1, #msg.text do
 			local byte = msg.text:byte(i)
 			self.ui_display:add( i + x*self.grid.cell_size.x, y*self.grid.cell_size.y, 0, byte, palette.white)

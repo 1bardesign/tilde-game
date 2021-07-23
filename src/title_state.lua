@@ -7,8 +7,6 @@ local state = class()
 
 --setup instance
 function state:new()
-	ZOOM_LEVEL = math.ceil(love.graphics.getHeight() / 1080 * 3)
-
 	self.background_colour = palette.dark
 	self.already_played = nil
 
